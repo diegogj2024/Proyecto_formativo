@@ -1,0 +1,12 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Chrome against Live Server", // Nombre más descriptivo
+            "url": "http://localhost:5500/templates/index.html", // ¡Ajusta el puerto y la ruta!
+            "webRoot": "${workspaceFolder}"
+        }
+    ]
+}
