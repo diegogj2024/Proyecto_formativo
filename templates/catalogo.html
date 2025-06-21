@@ -97,13 +97,11 @@
     </footer>
 
     <script>
-        // JavaScript para manejar eventos en el catálogo
         document.addEventListener('DOMContentLoaded', () => {
             const productGrid = document.getElementById('productGrid');
             const loginLink = document.getElementById('loginLink');
             const registerLink = document.getElementById('registerLink');
 
-            // Manejo de clics en los botones "Añadir al Carrito"
             if (productGrid) {
                 productGrid.addEventListener('click', (event) => {
                     if (event.target.tagName === 'BUTTON' && event.target.hasAttribute('data-product-id')) {
@@ -111,29 +109,21 @@
                         const productName = event.target.closest('.product-card').querySelector('h3').textContent;
                         console.log(`Producto "${productName}" (ID: ${productId}) añadido al carrito.`);
                         alert(`¡"${productName}" añadido al carrito!`);
-                        // Aquí enviarías este ID de producto al backend para añadirlo al carrito del usuario
-                        // fetch('/api/add-to-cart', {
-                        //     method: 'POST',
-                        //     headers: { 'Content-Type': 'application/json' },
-                        //     body: JSON.stringify({ productId: productId })
-                        // }).then(response => response.json()).then(data => console.log(data));
                     }
                 });
             }
 
-            // Redirigir a la página de login
             if (loginLink) {
                 loginLink.addEventListener('click', (e) => {
                     e.preventDefault();
-                    window.location.href = 'login_registro.html'; // Asegúrate de que esta sea la ruta correcta a tu archivo de login/registro
+                    window.location.href = 'login_registro.html';
                 });
             }
 
-            // Redirigir a la página de registro (puede ser la misma que el login)
             if (registerLink) {
                 registerLink.addEventListener('click', (e) => {
                     e.preventDefault();
-                    window.location.href = 'login_registro.html'; // Asegúrate de que esta sea la ruta correcta
+                    window.location.href = 'login_registro.html'; 
                 });
             }
         });
