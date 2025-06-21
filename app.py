@@ -21,7 +21,7 @@ def catalogo():
     return render_template('catalogo.html')
 
 @app.route('/inicio_sesion')
-def catalogo():
+def inicio_sesion():
     return render_template('inicio_sesion.html')
 
 if __name__ == '__main__':
