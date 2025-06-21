@@ -20,5 +20,9 @@ def index():
 def catalogo():
     return render_template('catalogo.html')
 
+@app.route('/inicio_sesion')
+def catalogo():
+    return render_template('inicio_sesion.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
