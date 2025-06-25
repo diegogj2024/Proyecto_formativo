@@ -1,5 +1,13 @@
-def validar_datos_incio_sesion(email,password):
-    print(email,password)
+from app import app, db, Cliente, Ubicacion
 
-def validar_registro(nombre,email,password):
-    print(nombre,email,password)
+def validar_login(email, password):
+    with app.app_context():
+        usuario = Cliente.query.filter_by(correo=email).first()
+
+    if usuario:
+        if usuario.password == password:
+            return True, usuario.nombre
+        else:
+            return False, "Contraseña incorrecta"
+    else:
+        return False, "Usuario no encontrado"
