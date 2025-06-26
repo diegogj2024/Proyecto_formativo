@@ -1,6 +1,5 @@
 from flask import Flask,request,render_template,redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-import consultas
 db = SQLAlchemy()
 
 app = Flask(__name__)
@@ -76,6 +75,8 @@ class Factura(db.Model):
 db.init_app(app)
 
 
+import consultas
+
 with app.app_context():
     db.create_all()
     
@@ -95,8 +96,11 @@ def inicio_sesion():
 def iniciar_Sesion():
     email=request.form['email']
     password=request.form['password']
-    consultas.validar_datos_incio_sesion(email,password)
-    return render_template('index.html')
+    exito, mensaje = consultas.validar_login(email, password)
+    if exito:
+        return redirect(url_for('catalogo'))
+    else:
+        return mensaje
 
 
 @app.route('/registrarse', methods=['POST'])
