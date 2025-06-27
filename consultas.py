@@ -17,9 +17,9 @@ def validar_login(email, password):
 def validar_registro(cedula,apellido,correo,telefono,nombre,password,direccion):
     with app.app_context():
         try:
-            ubicacion_existente = Ubicacion.query.filter_by(direccion=direccion).first()
             correo_existe=Cliente.query.filter_by(correo=correo).first()
-            if not ubicacion_existente and not correo_existe :
+
+            if not correo_existe :                  
                 nueva_ubicacion = Ubicacion(direccion=direccion)
                 db.session.add(nueva_ubicacion)
                 db.session.commit()
@@ -30,21 +30,19 @@ def validar_registro(cedula,apellido,correo,telefono,nombre,password,direccion):
                 correo=correo,
                 telefono=telefono,
                 password=password,
-                direccion=direccion
+                ubicacion_id=nueva_ubicacion.id
                 )
                 db.session.add(nuevo_cliente)
                 db.session.commit()
                 print("Cliente creado correctamente.") 
                 return 2   
             else:
-                if ubicacion_existente:
-                    print("esta ubicacion ya existe")
-                    return 1
-                elif correo_existe:
+                if correo_existe:
                     print("correo ya existe")
                     return 3
                 
                 
         except Exception as e:
+            print(f"Error: {e}")
             db.session.rollback()
             return 4

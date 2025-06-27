@@ -9,19 +9,20 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 class Ubicacion(db.Model):
     __tablename__ = 'ubicacion'
-    direccion = db.Column(db.String(255), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True,autoincrement=True)
+    direccion = db.Column(db.String(255))
     clientes = db.relationship('Cliente', backref='ubicacion', lazy=True)
 
 
 class Cliente(db.Model):
     __tablename__ = 'cliente'
-    cedula = db.Column(db.Integer, primary_key=True)
+    cedula = db.Column(db.BigInteger, primary_key=True)
     apellido = db.Column(db.String(100))
     correo = db.Column(db.String(100))
     telefono = db.Column(db.String(15))
     nombre = db.Column(db.String(100))
     password=db.Column(db.String(100))
-    direccion = db.Column(db.String(255), db.ForeignKey('ubicacion.direccion'))
+    ubicacion_id = db.Column(db.Integer, db.ForeignKey('ubicacion.id'))
 
 
 class Categoria(db.Model):
@@ -60,9 +61,8 @@ class Producto(db.Model):
 class Compra(db.Model):
     __tablename__ = 'compra'
     id_compra = db.Column(db.Integer, primary_key=True)
-    cedula = db.Column(db.Integer, db.ForeignKey('cliente.cedula'))
+    cedula = db.Column(db.BigInteger, db.ForeignKey('cliente.cedula'))
     id_producto = db.Column(db.Integer, db.ForeignKey('producto.id_producto'))
-
     factura = db.relationship('Factura', backref='compra', uselist=False)
 
 
@@ -121,9 +121,6 @@ def registrarse():
         return render_template('inicio_sesion.html', mensaje="esta cedula ya esta registrada")
     else:
         return render_template('inicio_sesion.html', mensaje="este correo ya existe")
-
-
-
 
 
 if __name__ == '__main__':
