@@ -10,6 +10,9 @@
     <div class="container" id="formContainer">
         <div class="login-form" id="loginForm">
             <h2>Iniciar Sesión</h2>
+            {% if mensaje2 %}
+                <p style="color:red;">{{ mensaje2 }}</p>
+            {% endif %}
             <form id="login" action="/iniciar_sesion" method="POST">
                 <div class="form-group">
                     <label for="loginEmail">Correo Electrónico</label>
@@ -24,12 +27,37 @@
             <p class="toggle-text">¿No tienes una cuenta? <a href="#" id="showRegister">Regístrate</a></p>
         </div>
 
+        {% if mensaje %}
+            <script>
+                formContainer.classList.add('active');
+            </script>
+        {% endif %}
+        
         <div class="register-form" id="registerForm">
             <h2>Registrarse</h2>
+            {% if mensaje %}
+                <p style="color:red;">{{ mensaje }}</p>
+            {% endif %}
             <form id="register" action="/registrarse" method="POST">
                 <div class="form-group">
                     <label for="registerName">Nombre</label>
                     <input type="text" id="registerName" name="name" placeholder="Tu Nombre Completo" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerApellido">Apellido</label>
+                    <input type="text" id="registerApellido" name="apellido" placeholder="Tu primer Apellido" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerTelefono">Telefono</label>
+                    <input type="text" id="registerTelefono" name="telefono" placeholder="Tu telefono" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerCedula">Cedula</label>
+                    <input type="text" id="registerCedula" name="cedula" placeholder="Tu cedula sin puntos" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerDireccion">Direccion</label>
+                    <input type="text" id="registerDireccion" name="direccion" placeholder="Tu direccion" required>
                 </div>
                 <div class="form-group">
                     <label for="registerEmail">Correo Electrónico</label>

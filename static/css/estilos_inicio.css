@@ -20,7 +20,7 @@ body {
             position: relative;
             /* Estos es para el efecto de deslizamiento */
             overflow: hidden;
-            height: 520px; 
+            height: 90vh; 
             display: flex;
             justify-content: center;
             align-items: center;

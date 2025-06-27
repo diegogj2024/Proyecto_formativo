@@ -96,20 +96,32 @@ def inicio_sesion():
 def iniciar_Sesion():
     email=request.form['email']
     password=request.form['password']
-    exito, mensaje = consultas.validar_login(email, password)
+    exito, mensaje2 = consultas.validar_login(email, password)
     if exito:
         return redirect(url_for('catalogo'))
     else:
-        return mensaje
+        return render_template('inicio_sesion.html', mensaje2=mensaje2)
 
 
 @app.route('/registrarse', methods=['POST'])
 def registrarse():
     nombre=request.form['name']
-    email=request.form['email']
+    correo=request.form['email']
     password=request.form['password']
-    consultas.validar_registro(nombre,email,password)
-    return redirect(url_for('catalogo'))
+    cedula=request.form['cedula']
+    direccion=request.form['direccion']
+    apellido=request.form['apellido']
+    telefono=request.form['telefono']
+    validacion=consultas.validar_registro(cedula,apellido,correo,telefono,nombre,password,direccion)
+    if validacion==2:
+       return redirect(url_for('catalogo'))
+    elif validacion==1:
+        return render_template('inicio_sesion.html', mensaje="esta ubicacion ya existe")
+    elif validacion==4:
+        return render_template('inicio_sesion.html', mensaje="esta cedula ya esta registrada")
+    else:
+        return render_template('inicio_sesion.html', mensaje="este correo ya existe")
+
 
 
 
