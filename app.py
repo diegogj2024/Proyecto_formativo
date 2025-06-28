@@ -1,11 +1,21 @@
 from flask import Flask,request,render_template,redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
+from flask_mail import Mail
 db = SQLAlchemy()
 
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] ='postgresql://root:yKKnLeAD9yFZvbmdc7qL1jagKw50qxx8@dpg-d1d9bk15pdvs73ahmfv0-a.oregon-postgres.render.com/esmir_krng'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'creacionesesmir@gmail.com'
+app.config['MAIL_PASSWORD'] = 'fhkz aomg wxuw pxmj'
+app.config['MAIL_DEFAULT_SENDER'] = 'creacionesesmir@gmail.com'
+
 
 class Ubicacion(db.Model):
     __tablename__ = 'ubicacion'
@@ -121,6 +131,13 @@ def registrarse():
         return render_template('inicio_sesion.html', mensaje="esta cedula ya esta registrada")
     else:
         return render_template('inicio_sesion.html', mensaje="este correo ya existe")
+
+@app.route('/recuperar', methods=['POST'])
+def recuperar():
+    correo = request.form['correo']
+    aviso=consultas.nueva_contraseña(correo)
+    return aviso
+
 
 
 if __name__ == '__main__':

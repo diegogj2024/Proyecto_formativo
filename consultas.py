@@ -1,4 +1,6 @@
 from app import app, db, Cliente, Ubicacion
+from flask_mail import Mail, Message
+import secrets
 
 def validar_login(email, password):
     with app.app_context():
@@ -46,3 +48,26 @@ def validar_registro(cedula,apellido,correo,telefono,nombre,password,direccion):
             print(f"Error: {e}")
             db.session.rollback()
             return 4
+
+
+def generar_token():
+    return secrets.token_urlsafe(12) 
+
+def nueva_contraseña(correo):
+    mail = Mail(app)
+    usuario = Cliente.query.filter_by(correo=correo).first()
+
+    if not usuario:
+        aviso="este correo no esta registrado en Creaciones Esmir"
+        return aviso
+    
+    clave=generar_token()
+    usuario.password=clave
+    db.session.commit
+
+    mensaje = Message('Recuperación de cuenta', recipients=[correo])
+    mensaje.body = f'Se ha restablecido tu contraseña temporal: {clave}\nPor favor, cámbiala al iniciar sesión.'
+    mail.send(mensaje)
+
+    aviso="se ha enviado una nueva contraseña a tu correo revisalo porfavor"
+    return aviso
