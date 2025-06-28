@@ -1,6 +1,6 @@
 from flask import Flask,request,render_template,redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-from flask_mail import Mail
+from flask_mail import Mail, Message
 db = SQLAlchemy()
 
 app = Flask(__name__)
@@ -82,6 +82,8 @@ class Factura(db.Model):
     fecha = db.Column(db.Date)
     monto_total = db.Column(db.Numeric(10, 2))
 
+mail = Mail(app)
+
 db.init_app(app)
 
 
@@ -131,12 +133,17 @@ def registrarse():
         return render_template('inicio_sesion.html', mensaje="esta cedula ya esta registrada")
     else:
         return render_template('inicio_sesion.html', mensaje="este correo ya existe")
+    
+@app.route('/mostrar_recuperar')
+def mostrar_recuperar():
+    return render_template('recuperacion.html')
 
 @app.route('/recuperar', methods=['POST'])
 def recuperar():
-    correo = request.form['correo']
+    correo = request.form['email']
     aviso=consultas.nueva_contraseña(correo)
-    return aviso
+    return render_template('recuperacion.html', aviso=aviso)
+
 
 
 
