@@ -4,7 +4,6 @@ import secrets
 def validar_login(email, password):
     with app.app_context():
         usuario = Cliente.query.filter_by(correo=email).first()
-        ver=usuario.password
 
     if usuario:
         if usuario.password == password:
