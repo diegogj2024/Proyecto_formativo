@@ -15,12 +15,21 @@
             <span class="logo-texto">Creaciones Esmir</span>
         </div>
         <nav>
-            <ul>
-                <li><a href="#">Buscar</a></li>
-                <li><a href="{{ url_for('catalogo') }}">Catálogo</a></li>
-                <li><a href="{{ url_for('inicio_sesion') }}">Iniciar sesión/ Registrarse </a></li>
-            </ul>
-        </nav>
+  <ul class="menu-nav">
+    <li>
+      <a href="#"><img src="{{ url_for('static', filename='css/multimedia/Buscar.png') }}" alt="Buscar" class="icono-nav" /></a>
+    </li>
+    <li>
+      <a href="{{ url_for('catalogo') }}"><img src="{{ url_for('static', filename='css/multimedia/Catalogo.png') }}" alt="Catálogo" class="icono-nav" /></a>
+    </li>
+    <li>
+      <a href="{{ url_for('inicio_sesion') }}"><img src="{{ url_for('static', filename='css/multimedia/Sesion.png') }}" alt="Iniciar sesión" class="icono-nav" /></a>
+    </li>
+    <li>
+      <a href="{{ url_for('inicio_sesion') }}"><img src="{{ url_for('static', filename='css/multimedia/Registrar.png') }}" alt="Registrarse" class="icono-nav" /></a>
+    </li>
+  </ul>
+</nav>
     </header>
     <main>
         <div class="contenedor_videito">
