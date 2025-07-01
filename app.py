@@ -110,7 +110,10 @@ def iniciar_Sesion():
     password=request.form['password']
     exito, mensaje2 = consultas.validar_login(email, password)
     if exito:
-        return redirect(url_for('catalogo'))
+        if mensaje2==4:
+            return render_template('admin.html')
+        else:
+            return redirect(url_for('catalogo'))
     else:
         return render_template('inicio_sesion.html', mensaje2=mensaje2)
 

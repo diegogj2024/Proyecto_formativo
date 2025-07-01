@@ -7,7 +7,10 @@ def validar_login(email, password):
 
     if usuario:
         if usuario.password == password:
-            return True, usuario.nombre
+            if email=="diegogarcia0809@outlook.com":
+                return True, 4
+            else:
+                return True, usuario.nombre
         else:
             mensaje= "Contraseña incorrecta"
             return False,mensaje
