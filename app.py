@@ -43,10 +43,10 @@ class Categoria(db.Model):
     productos = db.relationship('Producto', backref='categoria', lazy=True)
 
 
-class Comentario(db.Model):
+class Descripcion(db.Model):
     __tablename__ = 'comentario'
     id_comentario = db.Column(db.Integer, primary_key=True)
-
+    comentario = db.Column(db.String(100))
     productos = db.relationship('Producto', backref='comentario', lazy=True)
 
 
@@ -59,7 +59,7 @@ class CreacionesEsmi(db.Model):
 
 class Producto(db.Model):
     __tablename__ = 'producto'
-    id_producto = db.Column(db.Integer, primary_key=True)
+    id_producto = db.Column(db.Integer, primary_key=True,autoincrement=True)
     nombre_producto = db.Column(db.String(100))
     imagen=db.Column(db.String(100))
     cantidad=db.Column(db.Integer)
