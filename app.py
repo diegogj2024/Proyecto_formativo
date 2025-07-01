@@ -8,6 +8,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] ='postgresql://root:yKKnLeAD9yFZvbmdc7qL1jagKw50qxx8@dpg-d1d9bk15pdvs73ahmfv0-a.oregon-postgres.render.com/esmir_krng'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+app.config['UPLOAD_FOLDER'] = 'static/productos'
 
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
@@ -60,11 +61,12 @@ class Producto(db.Model):
     __tablename__ = 'producto'
     id_producto = db.Column(db.Integer, primary_key=True)
     nombre_producto = db.Column(db.String(100))
+    imagen=db.Column(db.String(100))
+    cantidad=db.Column(db.Integer)
     id_comentario = db.Column(db.Integer, db.ForeignKey('comentario.id_comentario'))
     rut = db.Column(db.Integer, db.ForeignKey('creacionesesmi.rut'))
     id_categoria = db.Column(db.Integer, db.ForeignKey('categoria.id_categoria'))
     precio = db.Column(db.Numeric(10, 2))
-
     compras = db.relationship('Compra', backref='producto', lazy=True)
 
 
