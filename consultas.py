@@ -54,19 +54,19 @@ def generar_token():
 
 def nueva_contraseña(correo):
     with app.app_context():
-        usuario = Cliente.query.filter_by(correo=correo).first()
+     usuario = Cliente.query.filter_by(correo=correo).first()
 
-    if not usuario:
-        aviso="este correo no esta registrado en Creaciones Esmir"
-        return aviso
+     if not usuario:
+         aviso="este correo no esta registrado en Creaciones Esmir"
+         return aviso
     
-    clave=generar_token()
-    usuario.password=clave
-    db.session.commit()
+     clave=generar_token()
+     usuario.password=clave
+     db.session.commit()
 
-    mensaje = Message('Recuperación de cuenta', recipients=[correo])
-    mensaje.body = f'Se ha restablecido tu contraseña temporal:\n {clave}\nPor favor, cámbiala al iniciar sesión.'
-    mail.send(mensaje)
+     mensaje = Message('Recuperación de cuenta', recipients=[correo])
+     mensaje.body = f'Se ha restablecido tu contraseña temporal:\n {clave}\nPor favor, cámbiala al iniciar sesión.'
+     mail.send(mensaje)
 
-    aviso="se ha enviado una nueva contraseña a tu correo revisalo porfavor"
-    return aviso
+     aviso="se ha enviado una nueva contraseña a tu correo revisalo porfavor"
+     return aviso
