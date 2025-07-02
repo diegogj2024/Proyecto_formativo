@@ -1,6 +1,7 @@
 from flask import Flask,request,render_template,redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
+import os
 db = SQLAlchemy()
 
 app = Flask(__name__)
@@ -38,23 +39,24 @@ class Cliente(db.Model):
 
 class Categoria(db.Model):
     __tablename__ = 'categoria'
-    id_categoria = db.Column(db.Integer, primary_key=True)
+    id_categoria = db.Column(db.Integer, primary_key=True,autoincrement=True)
     nombre_categoria = db.Column(db.String(100))
     productos = db.relationship('Producto', backref='categoria', lazy=True)
 
 
 class Descripcion(db.Model):
-    __tablename__ = 'comentario'
-    id_comentario = db.Column(db.Integer, primary_key=True)
-    comentario = db.Column(db.String(100))
+    __tablename__ = 'descripcion'
+    id_descripcion = db.Column(db.Integer, primary_key=True,autoincrement=True)
+    descripcion = db.Column(db.String(100))
     productos = db.relationship('Producto', backref='comentario', lazy=True)
 
 
-class CreacionesEsmi(db.Model):
-    __tablename__ = 'creacionesesmi'
-    rut = db.Column(db.Integer, primary_key=True)
-
-    productos = db.relationship('Producto', backref='creador', lazy=True)
+class Empresa(db.Model):
+    __tablename__ = 'empresa'
+    id = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(100))
+    rut = db.Column(db.String(20), unique=True)
+    direccion = db.Column(db.String(100))
 
 
 class Producto(db.Model):
@@ -63,11 +65,9 @@ class Producto(db.Model):
     nombre_producto = db.Column(db.String(100))
     imagen=db.Column(db.String(100))
     cantidad=db.Column(db.Integer)
-    id_comentario = db.Column(db.Integer, db.ForeignKey('comentario.id_comentario'))
-    rut = db.Column(db.Integer, db.ForeignKey('creacionesesmi.rut'))
+    id_descripcion = db.Column(db.Integer, db.ForeignKey('descripcion.id_descripcion'))
     id_categoria = db.Column(db.Integer, db.ForeignKey('categoria.id_categoria'))
     precio = db.Column(db.Numeric(10, 2))
-    compras = db.relationship('Compra', backref='producto', lazy=True)
 
 
 class Compra(db.Model):
@@ -150,7 +150,37 @@ def recuperar():
     return render_template('recuperacion.html', aviso=aviso)
 
 
+@app.route('/crear_productos')
+def crear_productos():
+    categorias = Categoria.query.all()
+    return render_template('crear_productos.html', categorias=categorias)
 
+@app.route('/ingresar_productos', methods=['POST'])
+def ingresar_productos():
+    imagen=request.files['imagenp']
+    nombrep=request.form['nombrep']
+    cantidadp=request.form['cantidadp']
+    descripcionp=request.form['descripcionp']
+    categoria=request.form['categoria']
+    preciop=request.form['preciop']
+
+    if imagen:
+        ruta_guardado = os.path.join(app.config['UPLOAD_FOLDER'], imagen.filename)
+        imagen.save(ruta_guardado)
+        imagen_nombre=imagen.filename
+        aviso=consultas.guardar_productos(nombrep,cantidadp,descripcionp,categoria,imagen_nombre,preciop)
+        return render_template('crear_productos.html',aviso=aviso)
+
+
+@app.route('/crear_categoria')
+def crear_categoria():
+   return render_template('crear_categoria.html')
+
+@app.route('/guardar_categoria', methods=['POST'])
+def guardar_categoria():
+    categoria=request.form['categorianame']
+    aviso=consultas.guardar_Categoria(categoria)
+    return render_template('crear_categoria.html',aviso=aviso)
 
 if __name__ == '__main__':
     app.run(debug=True)
