@@ -94,6 +94,11 @@ def guardar_Categoria(categoria):
 def guardar_productos(nombrep,cantidadp,descripcionp,categoriap,imagen_nombre,preciop):
     with app.app_context():
         producto = Producto.query.filter_by(nombre_producto=nombrep).first()
+        cantidadp = int(cantidadp)
+        preciop = float(preciop)
+        if cantidadp <= 0 or preciop <= 0:
+            aviso="El precio y/o cantidad debe ser mayor a 0, intente nuevamente"
+            return aviso
 
         if producto:
             aviso="este producto ya esta registrado"
