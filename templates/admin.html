@@ -2,9 +2,22 @@
 <html lang="es">
     <head>
         <title>admin</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos_inicio.css') }}">
     </head>
     <body>
-        <a href="{{ url_for('crear_productos') }}"><button> crear productos</button></a>
-        .<a href="{{ url_for('crear_categoria') }}"><button> crear categoria</button></a>
+        <div class="container" id="formContainer">
+            <div class="login-form" id="loginForm">
+                <h2>Panel de Administración</h2>
+                <p> <strong> Bienvenido, administrador. Desde aquí puedes gestionar los productos y las categorías de la tienda. </strong></p>
+
+                <a href="{{ url_for('crear_productos') }}">
+                    <button>Crear productos</button>
+                </a>
+
+                <a href="{{ url_for('crear_categoria') }}">
+                    <button>Crear categoría</button>
+                </a>
+            </div>
+        </div>
     </body>
 </html>
