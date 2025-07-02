@@ -1,4 +1,4 @@
-from app import app, db, Cliente, Ubicacion,mail,Message
+from app import app, db, Cliente, Ubicacion,mail,Message,Producto,Descripcion,Categoria
 import secrets
 
 def validar_login(email, password):
@@ -73,3 +73,49 @@ def nueva_contraseña(correo):
 
      aviso="se ha enviado una nueva contraseña a tu correo revisalo porfavor"
      return aviso
+
+
+def guardar_Categoria(categoria):
+    with app.app_context():
+        gcategoria= Categoria.query.filter_by(nombre_categoria=categoria).first()
+        if gcategoria:
+            aviso="esta categoria ya existe"
+            return aviso
+        else:
+            nueva_categoria=Categoria(
+                nombre_categoria=categoria
+            )
+            db.session.add(nueva_categoria)
+            db.session.commit()
+            aviso="categoria guardada exitosamente"
+            return aviso
+        
+        
+def guardar_productos(nombrep,cantidadp,descripcionp,categoriap,imagen_nombre,preciop):
+    with app.app_context():
+        producto = Producto.query.filter_by(nombre_producto=nombrep).first()
+
+        if producto:
+            aviso="este producto ya esta registrado"
+            return aviso
+        else:
+            nueva_descripcion=Descripcion(
+                descripcion=descripcionp,
+            )
+            db.session.add(nueva_descripcion)
+            db.session.commit()
+
+            iddescripcion=Descripcion.query.filter_by(descripcion=descripcionp).first()
+            nuevo_producto=Producto(
+                nombre_producto=nombrep,
+                imagen=imagen_nombre,
+                cantidad=cantidadp,
+                id_descripcion=iddescripcion.id_descripcion,
+                id_categoria=categoriap,
+                precio=preciop
+            )
+
+            db.session.add(nuevo_producto)
+            db.session.commit()
+            aviso="producto guardado exitosamente"
+            return aviso

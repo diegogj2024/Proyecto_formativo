@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Categoria</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos_inicio.css') }}">
+</head>
+<body>
+    <div class="container" id="formContainer">
+        <div class="login-form" id="loginForm">
+            <h2>Crear Categoria</h2>
+            {% if aviso %}
+                <p style="color:red;">{{ aviso }}</p>
+            {% endif %}
+            <form id="login" action="/guardar_categoria" method="POST">
+                <div class="form-group">
+                    <label for="categoria">ingrese el nombre de la categoria</label>
+                    <input type="text" id="categoria" name="categorianame" placeholder="ingrese el nombre de la categoria" required>
+                </div>
+                <button type="submit">Guardar</button>
+            </form>
+        </div>
+    </div>
+</body>
