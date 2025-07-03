@@ -49,8 +49,16 @@
 
                     <input type="number" id="precio" name="preciop" placeholder="precio del producto" required min="1">
                 </div>
-                <button type="submit">Guardar</button>
+                <button type="submit">Crear</button>
+                <p class="toggle-text">¿Deseas volver al menu principal? <a href="#" id="redirect">Menu Principal</a></p>
             </form>
         </div>
     </div>
+    <script>
+        const redirect = document.getElementById('redirect');
+
+        redirect.addEventListener('click', (e) => {
+            window.location.href = "/admin";
+        });
+    </script>
 </body>

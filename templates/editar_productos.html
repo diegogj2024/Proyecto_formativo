@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>editar productos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos_editar.css') }}">
+</head>
+<body>
+    <div>
+        <h1>elige el producto que deseas editar</h1>
+        <a href="{{ url_for('admin') }}"><button>menu principal</button></a>
+        <form action='/editar_producto' method="post">
+            {% for pro in productos %}
+             <button type="submit" name="id_p" value="{{pro.id_producto}}">
+                <img src="{{ url_for('static', filename='productos/' + pro.imagen) }}" >
+                <p>{{pro.nombre_producto}}</p>
+            </button>
+            {% endfor %}
+        </form>
+    </div>
+</body>
+</html>
