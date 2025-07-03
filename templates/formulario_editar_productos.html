@@ -28,7 +28,8 @@
                     <label for="imagen">Imagen</label>
                     <input type="file" name="imagenp" accept="image/*" {% if not producto %} required {% endif %}>
                     {% if producto %}
-                        <p>Imagen actual: {{ producto.imagen }}</p>
+                        <p>Imagen actual:<br></p>
+                        <img src="{{ url_for('static', filename='productos/' + producto.imagen) }}" style="width: 10vw; height: 10vh;">
                     {% endif %}
                 </div>
 
