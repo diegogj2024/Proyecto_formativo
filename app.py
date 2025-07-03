@@ -119,6 +119,9 @@ def iniciar_Sesion():
     else:
         return render_template('inicio_sesion.html', mensaje2=mensaje2)
 
+@app.route('/admin')
+def admin():
+    return render_template('admin.html')
 
 @app.route('/registrarse', methods=['POST'])
 def registrarse():
@@ -181,6 +184,39 @@ def guardar_categoria():
     categoria=request.form['categorianame']
     aviso=consultas.guardar_Categoria(categoria)
     return render_template('crear_categoria.html',aviso=aviso)
+
+@app.route('/mostrar_editar_producto')
+def mostrar_editar_producto():
+    productos=Producto.query.all()
+    return render_template('editar_productos.html',productos=productos)
+
+@app.route('/editar_producto', methods=['POST'])
+def editar_producto():
+    id_producto=request.form['id_p']
+    categorias = Categoria.query.all()
+    producto_Editar=Producto.query.filter_by(id_producto=id_producto).first()
+    descripcion_e=Descripcion.query.filter_by(id_descripcion=producto_Editar.id_descripcion).first()
+    return render_template('formulario_editar_productos.html',categorias=categorias,producto=producto_Editar,descripcion=descripcion_e)
+@app.route('/actualizar',methods=['POST'])
+def actualizar():
+    nombre = request.form['nombrep']
+    cantidad = request.form['cantidadp']
+    descripcion = request.form['descripcionp']
+    categoria = request.form['categoria']
+    precio = request.form['preciop']
+    imagen = request.files['imagenp']
+    id_producto = request.form['id_producto']
+    aviso=consultas.actualizar(nombre,cantidad,descripcion,categoria,precio,imagen,id_producto)
+    producto = Producto.query.filter_by(id_producto=id_producto).first()
+    descripcion_obj = Descripcion.query.filter_by(id_descripcion=producto.id_descripcion).first()
+    categorias = Categoria.query.all()
+    return render_template(
+        'formulario_editar_productos.html',
+        aviso=aviso,
+        producto=producto,
+        descripcion=descripcion_obj,
+        categorias=categorias
+    )
 
 if __name__ == '__main__':
     app.run(debug=True)

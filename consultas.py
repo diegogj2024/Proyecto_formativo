@@ -1,4 +1,5 @@
-from app import app, db, Cliente, Ubicacion,mail,Message,Producto,Descripcion,Categoria
+from app import app, db, Cliente, Ubicacion,mail,Message,Producto,Descripcion,Categoria,os
+from werkzeug.utils import secure_filename
 import secrets
 
 def validar_login(email, password):
@@ -124,3 +125,30 @@ def guardar_productos(nombrep,cantidadp,descripcionp,categoriap,imagen_nombre,pr
             db.session.commit()
             aviso="producto guardado exitosamente"
             return aviso
+        
+def actualizar(nombre,cantidad,descripcion,categoria,precio,imagen,id_producto):
+    with app.app_context():
+        try:
+            producto = Producto.query.filter_by(id_producto=id_producto).first()
+            descripcion1=Descripcion.query.filter_by(id_descripcion=producto.id_descripcion).first()
+            if producto:
+               filename = secure_filename(imagen.filename)
+               ruta = os.path.join('static/productos', filename)
+               if not os.path.exists(ruta):
+                        imagen.save(ruta)
+                        producto.imagen = filename
+
+               producto.nombre_producto = nombre
+               producto.cantidad = cantidad
+               producto.id_categoria = categoria
+               producto.precio = precio
+               descripcion1.descripcion=descripcion
+               db.session.commit()
+               aviso="editado con exito"
+               return aviso
+        except Exception as e:
+            aviso="error "
+            return aviso
+
+
+
