@@ -44,13 +44,6 @@ class Categoria(db.Model):
     productos = db.relationship('Producto', backref='categoria', lazy=True)
 
 
-class Descripcion(db.Model):
-    __tablename__ = 'descripcion'
-    id_descripcion = db.Column(db.Integer, primary_key=True,autoincrement=True)
-    descripcion = db.Column(db.String(100))
-    productos = db.relationship('Producto', backref='comentario', lazy=True)
-
-
 class Empresa(db.Model):
     __tablename__ = 'empresa'
     id = db.Column(db.Integer, primary_key=True)
@@ -65,7 +58,7 @@ class Producto(db.Model):
     nombre_producto = db.Column(db.String(100))
     imagen=db.Column(db.String(100))
     cantidad=db.Column(db.Integer)
-    id_descripcion = db.Column(db.Integer, db.ForeignKey('descripcion.id_descripcion'))
+    descripcion=db.Column(db.String(100))
     id_categoria = db.Column(db.Integer, db.ForeignKey('categoria.id_categoria'))
     precio = db.Column(db.Numeric(10, 2))
 
@@ -195,8 +188,7 @@ def editar_producto():
     id_producto=request.form['id_p']
     categorias = Categoria.query.all()
     producto_Editar=Producto.query.filter_by(id_producto=id_producto).first()
-    descripcion_e=Descripcion.query.filter_by(id_descripcion=producto_Editar.id_descripcion).first()
-    return render_template('formulario_editar_productos.html',categorias=categorias,producto=producto_Editar,descripcion=descripcion_e)
+    return render_template('formulario_editar_productos.html',categorias=categorias,producto=producto_Editar)
 @app.route('/actualizar',methods=['POST'])
 def actualizar():
     nombre = request.form['nombrep']
@@ -208,13 +200,11 @@ def actualizar():
     id_producto = request.form['id_producto']
     aviso=consultas.actualizar(nombre,cantidad,descripcion,categoria,precio,imagen,id_producto)
     producto = Producto.query.filter_by(id_producto=id_producto).first()
-    descripcion_obj = Descripcion.query.filter_by(id_descripcion=producto.id_descripcion).first()
     categorias = Categoria.query.all()
     return render_template(
         'formulario_editar_productos.html',
         aviso=aviso,
         producto=producto,
-        descripcion=descripcion_obj,
         categorias=categorias
     )
 
