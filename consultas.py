@@ -1,4 +1,4 @@
-from app import app, db, Cliente, Ubicacion,mail,Message,Producto,Descripcion,Categoria,os
+from app import app, db, Cliente, Ubicacion,mail,Message,Producto,Categoria,os
 from werkzeug.utils import secure_filename
 import secrets
 
@@ -105,18 +105,12 @@ def guardar_productos(nombrep,cantidadp,descripcionp,categoriap,imagen_nombre,pr
             aviso="este producto ya esta registrado"
             return aviso
         else:
-            nueva_descripcion=Descripcion(
-                descripcion=descripcionp,
-            )
-            db.session.add(nueva_descripcion)
-            db.session.commit()
-
-            iddescripcion=Descripcion.query.filter_by(descripcion=descripcionp).first()
+ 
             nuevo_producto=Producto(
                 nombre_producto=nombrep,
                 imagen=imagen_nombre,
                 cantidad=cantidadp,
-                id_descripcion=iddescripcion.id_descripcion,
+                descripcion=descripcionp,
                 id_categoria=categoriap,
                 precio=preciop
             )
@@ -142,7 +136,7 @@ def actualizar(nombre,cantidad,descripcion,categoria,precio,imagen,id_producto):
                producto.cantidad = cantidad
                producto.id_categoria = categoria
                producto.precio = precio
-               descripcion1.descripcion=descripcion
+               producto.descripcion=descripcion
                db.session.commit()
                aviso="editado con exito"
                return aviso
