@@ -1,4 +1,4 @@
-from flask import Flask,request,render_template,redirect, url_for
+from flask import Flask,request,render_template,redirect, url_for,session
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
 import os
@@ -119,7 +119,23 @@ def index():
 
 @app.route('/catalogo')
 def catalogo():
-    return render_template('catalogo.html')
+    productos = Producto.query.all()
+    tallas = Talla.query.all()
+    tallas_por_producto = {}
+
+    for producto in productos:
+        inventario = Inventario.query.filter_by(id_producto=producto.id_producto).all()
+        tallas_con_cantidades = {}
+
+        for item in inventario:
+            talla = Talla.query.get(item.id_talla)
+            if talla:
+                tallas_con_cantidades[talla.nombre_talla] = item.cantidad
+        
+        tallas_por_producto[producto.id_producto] = tallas_con_cantidades
+
+    return render_template('catalogo.html', productos=productos, tallas_por_producto=tallas_por_producto)
+
 
 @app.route('/inicio_sesion')
 def inicio_sesion():
@@ -130,10 +146,15 @@ def iniciar_Sesion():
     email=request.form['email']
     password=request.form['password']
     exito, mensaje2 = consultas.validar_login(email, password)
+    cliente = Cliente.query.filter_by(correo=email).first()
     if exito:
         if mensaje2==4:
+            session['usuario_id'] = cliente.id_cliente
+            session['correo'] = cliente.correo
             return render_template('admin.html')
         else:
+            session['usuario_id'] = cliente.id_cliente
+            session['correo'] = cliente.correo
             return redirect(url_for('catalogo'))
     else:
         return render_template('inicio_sesion.html', mensaje2=mensaje2)
@@ -154,8 +175,6 @@ def registrarse():
     validacion=consultas.validar_registro(cedula,apellido,correo,telefono,nombre,password,direccion)
     if validacion==2:
        return redirect(url_for('catalogo'))
-    elif validacion==1:
-        return render_template('inicio_sesion.html', mensaje="esta ubicacion ya existe")
     elif validacion==4:
         return render_template('inicio_sesion.html', mensaje="esta cedula ya esta registrada")
     else:

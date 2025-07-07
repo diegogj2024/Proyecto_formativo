@@ -1,4 +1,4 @@
-from app import app, db, Cliente, Ubicacion,mail,Message,Producto,Categoria,os,Inventario
+from app import app, db, Cliente, Ubicacion,mail,Message,Producto,Categoria,os,Inventario,session
 from werkzeug.utils import secure_filename
 import secrets
 
@@ -173,5 +173,5 @@ def actualizar(nombre, descripcion, categorias, precio, imagen, id_producto, tal
         db.session.commit()
         return "Producto actualizado correctamente"
 
-
-
+def logout():
+    session.clear()
