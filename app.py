@@ -18,6 +18,8 @@ app.config['MAIL_USERNAME'] = 'creacionesesmir@gmail.com'
 app.config['MAIL_PASSWORD'] = 'fhkz aomg wxuw pxmj'
 app.config['MAIL_DEFAULT_SENDER'] = 'creacionesesmir@gmail.com'
 
+app.secret_key = 'f45@sdA54f!asd9wq8e*as'
+
 
 from flask_sqlalchemy import SQLAlchemy
 
@@ -149,11 +151,11 @@ def iniciar_Sesion():
     cliente = Cliente.query.filter_by(correo=email).first()
     if exito:
         if mensaje2==4:
-            session['usuario_id'] = cliente.id_cliente
+            session['usuario_id'] = cliente.cedula
             session['correo'] = cliente.correo
             return render_template('admin.html')
         else:
-            session['usuario_id'] = cliente.id_cliente
+            session['usuario_id'] = cliente.cedula
             session['correo'] = cliente.correo
             return redirect(url_for('catalogo'))
     else:
