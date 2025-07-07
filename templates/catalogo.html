@@ -26,69 +26,23 @@
         <h2>Colección Destacada</h2>
 
         <div class="product-grid" id="productGrid">
-            <div class="product-card">
-                <img src="https://via.placeholder.com/200x200/FFC0CB/000000?text=Conjunto+Encaje" alt="Conjunto Lencería Encaje">
-                <h3>Conjunto Sensual de Encaje</h3>
-                <p class="description">Diseño delicado con finos encajes, ideal para sentirte elegante y cómoda.</p>
-                <div class="price">$35.000</div>
-                <button data-product-id="prod001">Añadir al Carrito</button>
-            </div>
-
-            <div class="product-card">
-                <img src="https://via.placeholder.com/200x200/ADD8E6/000000?text=Brasier+PushUp" alt="Brasier Confort Push-Up">
-                <h3>Brasier Confort Push-Up</h3>
-                <p class="description">Soporte y realce perfectos, con tirantes ajustables para máximo confort.</p>
-                <div class="price">$25.000</div>
-                <button data-product-id="prod002">Añadir al Carrito</button>
-            </div>
-
-            <div class="product-card">
-                <img src="https://via.placeholder.com/200x200/90EE90/000000?text=Cachetero+Algodon" alt="Cachetero de Algodón Suave">
-                <h3>Cachetero de Algodón Suave</h3>
-                <p class="description">Libertad y frescura garantizadas con su tela de algodón transpirable.</p>
-                <div class="price">$12.000</div>
-                <button data-product-id="prod003">Añadir al Carrito</button>
-            </div>
-
-            <div class="product-card">
-                <img src="https://via.placeholder.com/200x200/BA55D3/FFFFFF?text=Babydoll+Satin" alt="Babydoll Satinado Elegante">
-                <h3>Babydoll Satinado Elegante</h3>
-                <p class="description">Perfecto para noches especiales, suave al tacto y con caída impecable.</p>
-                <div class="price">$45.000</div>
-                <button data-product-id="prod004">Añadir al Carrito</button>
-            </div>
-
-            <div class="product-card">
-                <img src="https://via.placeholder.com/200x200/FFD700/000000?text=Conjunto+Deportivo" alt="Conjunto Deportivo de Microfibra">
-                <h3>Conjunto Deportivo Microfibra</h3>
-                <p class="description">Ideal para ejercicio, brinda soporte y ventilación para tu rutina.</p>
-                <div class="price">$40.000</div>
-                <button data-product-id="prod005">Añadir al Carrito</button>
-            </div>
-
-            <div class="product-card">
-                <img src="https://via.placeholder.com/200x200/DDA0DD/000000?text=Boxer+Encaje" alt="Bóxer Short de Encaje">
-                <h3>Bóxer Short de Encaje</h3>
-                <p class="description">Combina comodidad y sensualidad, con un toque moderno y atrevido.</p>
-                <div class="price">$18.000</div>
-                <button data-product-id="prod006">Añadir al Carrito</button>
-            </div>
-
-            <div class="product-card">
-                <img src="https://via.placeholder.com/200x200/FF69B4/FFFFFF?text=Tanga+Invisible" alt="Tanga Hilo Invisible">
-                <h3>Tanga Hilo Invisible</h3>
-                <p class="description">Máxima discreción bajo cualquier prenda, sin costuras que se marquen.</p>
-                <div class="price">$10.000</div>
-                <button data-product-id="prod007">Añadir al Carrito</button>
-            </div>
-
-            <div class="product-card">
-                <img src="https://via.placeholder.com/200x200/8A2BE2/FFFFFF?text=Corpiño+Reductor" alt="Corpiño Reductor de Encaje">
-                <h3>Corpiño Reductor Encaje</h3>
-                <p class="description">Moldea tu figura con elegancia y soporte gracias a su diseño especializado.</p>
-                <div class="price">$30.000</div>
-                <button data-product-id="prod008">Añadir al Carrito</button>
-            </div>
+            {% for pro in productos %}
+                <div class="product-card">
+                    <img src="{{ url_for('static', filename='productos/' + pro.imagen) }}" alt="{{pro.nombre_producto}}">
+                    <h3>{{pro.nombre_producto}}</h3>
+                    <p class="description">{{pro.descripcion}}</p>
+                    <p class="price">${{pro.precio}}</p>
+                    <div class="tallas">
+                        <strong>Tallas disponibles:</strong>
+                            <ul>
+                                {% for talla, cantidad in tallas_por_producto[pro.id_producto].items() %}
+                                    <li>{{ talla }} - Cantidad: {{ cantidad }}</li>
+                                {% endfor %}
+                            </ul>
+                    </div>
+                    <button data-product-id="{{pro.id_producto}}">Añadir al Carrito</button>
+                </div>
+            {% endfor %}
         </div>
     </div>
 
@@ -116,14 +70,14 @@
             if (loginLink) {
                 loginLink.addEventListener('click', (e) => {
                     e.preventDefault();
-                    window.location.href = 'login_registro.html';
+                    window.location.href = '/inicio_sesion';
                 });
             }
 
             if (registerLink) {
                 registerLink.addEventListener('click', (e) => {
                     e.preventDefault();
-                    window.location.href = 'login_registro.html'; 
+                    window.location.href = '/inicio_sesion'; 
                 });
             }
         });

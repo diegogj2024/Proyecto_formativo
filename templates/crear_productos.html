@@ -12,11 +12,6 @@
             <h2>Crear productos</h2>
             {% if aviso %}
                 <p style="color:red;">{{ aviso }}</p>
-                <script>
-                    setTimeout(function(){
-                     window.location.href = "/crear_productos";
-                    }, 6000);
-                </script>
             {% endif %}
         <form id="login" action="/ingresar_productos" method="POST" enctype="multipart/form-data">
             <div class="form-group">
@@ -77,7 +72,6 @@
         const nombreTalla = chk.dataset.talla;
 
         if (chk.checked) {
-            // Crear input de cantidad
             const div = document.createElement('div');
             div.id = 'cantidad_' + tallaId;
             div.innerHTML = `
@@ -86,7 +80,6 @@
             `;
             contenedorCantidades.appendChild(div);
         } else {
-            // Quitar el input si se desmarca la talla
             const inputDiv = document.getElementById('cantidad_' + tallaId);
             if (inputDiv) {
                 contenedorCantidades.removeChild(inputDiv);
