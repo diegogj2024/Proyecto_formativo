@@ -12,53 +12,81 @@
             <h2>Crear productos</h2>
             {% if aviso %}
                 <p style="color:red;">{{ aviso }}</p>
-                <script>
-                    setTimeout(function(){
-                     window.location.href = "/crear_productos";
-                    }, 6000);
-                </script>
             {% endif %}
-            <form id="login" action="/ingresar_productos"  method="POST" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="nombrep">nombre del producto</label>
-                    <input type="text" id="nombrep" name="nombrep" placeholder="nombre del producto" required>
-                </div>
-                <div class="form-group">
-                    <label for="imagen">ingrese la imagen</label>
-                    <input type="file" name="imagenp" accept="image/*" required>
-                </div>
-                <div class="form-group">
-                    <label for="cantidad">ingrese la cantidad del producto</label>
+        <form id="login" action="/ingresar_productos" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="nombrep">Nombre del producto</label>
+                <input type="text" id="nombrep" name="nombrep" required>
+            </div>
 
-                    <input type="number" id="cantidad" name="cantidadp" placeholder="ingrese cantidad" required>
-                </div>
-                <div class="form-group">
-                    <label for="descripcion">descripcion del producto</label>
-                    <input type="text" id="descripcion" name="descripcionp" placeholder="descripcion del producto" required>
-                </div>
-                <div class="form-group">
-                    <select name="categoria">
-                        <option value="" disabled selected >Seleccione una de las categorias</option>
-                        {% for cat in categorias %}
-                            <option value="{{ cat.id_categoria }}">{{ cat.nombre_categoria }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="precio">precio del producto</label>
+            <div class="form-group">
+                <label for="imagen">Imagen del producto</label>
+                <input type="file" name="imagenp" accept="image/*" required>
+            </div>
 
-                    <input type="number" id="precio" name="preciop" placeholder="precio del producto" required min="1">
-                </div>
-                <button type="submit">Crear</button>
-                <p class="toggle-text">¿Deseas volver al menu principal? <a href="#" id="redirect">Menu Principal</a></p>
-            </form>
-        </div>
-    </div>
-    <script>
-        const redirect = document.getElementById('redirect');
+            <div class="form-group">
+                <label for="descripcion">Descripción del producto</label>
+                <input type="text" id="descripcion" name="descripcionp" required>
+            </div>
+
+            <div class="form-group">
+                <label>Categorías:</label><br>
+                {% for cat in categorias %}
+                    <input type="checkbox" name="categorias" value="{{ cat.id_categoria }}"> {{ cat.nombre_categoria }}<br>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label for="precio">Precio del producto</label>
+                <input type="number" id="precio" name="preciop" min="1" required>
+            </div>
+
+            <div class="form-group">
+                <label>Tallas disponibles:</label><br>
+                {% for talla in tallas %}
+                    <input type="checkbox" class="talla-checkbox" name="tallas" value="{{ talla.id_talla }}" data-talla="{{ talla.nombre_talla }}">
+                {{ talla.nombre_talla }}<br>
+                {% endfor %}
+            </div>
+
+            <div id="contenedor-cantidades">
+
+            </div>
+
+            <button type="submit">Crear</button>
+            <p class="toggle-text">¿Deseas editar otro? <a href="#" id="redirect">Elegir otro Producto</a></p>
+        </form>
+
+<script>
+    const checkboxes = document.querySelectorAll('.talla-checkbox');
+    const contenedorCantidades = document.getElementById('contenedor-cantidades');
+    const redirect = document.getElementById('redirect');
 
         redirect.addEventListener('click', (e) => {
             window.location.href = "/admin";
         });
-    </script>
+
+    checkboxes.forEach(chk => {
+    chk.addEventListener('change', () => {
+        const tallaId = chk.value;
+        const nombreTalla = chk.dataset.talla;
+
+        if (chk.checked) {
+            const div = document.createElement('div');
+            div.id = 'cantidad_' + tallaId;
+            div.innerHTML = `
+                <label>Cantidad para talla ${nombreTalla}:</label>
+                <input type="number" name="cantidad_${tallaId}" min="0" required>
+            `;
+            contenedorCantidades.appendChild(div);
+        } else {
+            const inputDiv = document.getElementById('cantidad_' + tallaId);
+            if (inputDiv) {
+                contenedorCantidades.removeChild(inputDiv);
+            }
+        }
+    });
+});
+</script>
 </body>
+</html>

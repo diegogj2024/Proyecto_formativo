@@ -9,74 +9,107 @@
 <body>
     <div class="container" id="formContainer">
         <div class="login-form" id="loginForm">
-            <h2>{{ 'Editar' if producto else 'Crear' }} producto</h2>           
             
+            <h2>{{ 'Editar' if producto else 'Crear' }} producto</h2>           
+
             {% if aviso %}
                 <p style="color:red;">{{ aviso }}</p>
             {% endif %}
 
             <form id="login" action="/actualizar" method="POST" enctype="multipart/form-data">
-                
+
+                <input type="hidden" name="id_producto" value="{{ producto.id_producto }}">
+
                 <div class="form-group">
                     <label for="nombrep">Nombre del producto</label>
-                    <input type="text" id="nombrep" name="nombrep" 
-                        value="{{ producto.nombre_producto if producto else '' }}" 
-                        required>
+                    <input type="text" id="nombrep" name="nombrep" value="{{ producto.nombre_producto }}" required>
                 </div>
 
                 <div class="form-group">
                     <label for="imagen">Imagen</label>
-                    <input type="file" name="imagenp" accept="image/*" {% if not producto %} required {% endif %}>
+                    <input type="file" name="imagenp" accept="image/*">
                     {% if producto %}
-                        <p>Imagen actual:<br></p>
+                        <p>Imagen actual:</p>
                         <img src="{{ url_for('static', filename='productos/' + producto.imagen) }}" style="width: 10vw; height: 10vh;">
                     {% endif %}
                 </div>
 
                 <div class="form-group">
-                    <label for="cantidad">Cantidad</label>
-                    <input type="number" id="cantidad" name="cantidadp" 
-                        value="{{ producto.cantidad if producto else '' }}" 
-                        required min="0">
-                </div>
-
-                <div class="form-group">
                     <label for="descripcion">Descripción</label>
-                    <input type="text" id="descripcion" name="descripcionp" 
-                        value="{{descripcion.descripcion if producto else '' }}" 
-                        required>
+                    <input type="text" id="descripcion" name="descripcionp" value="{{ producto.descripcion }}" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="categoria">Categoría</label>
-                    <select name="categoria" required>
-                        <option value="" disabled {% if not producto %} selected {% endif %}>Seleccione una categoría</option>
-                        {% for cat in categorias %}
-                            <option value="{{ cat.id_categoria }}" 
-                            {% if producto and producto.id_categoria == cat.id_categoria %} selected {% endif %}>
-                                {{ cat.nombre_categoria }}
-                            </option>
-                        {% endfor %}
-                    </select>
+                    <label>Categorías:</label><br>
+                    {% for cat in categorias %}
+                        <input type="checkbox" name="categorias" value="{{ cat.id_categoria }}" 
+                        {% if cat.id_categoria in categorias_seleccionadas %} checked {% endif %}>
+                        {{ cat.nombre_categoria }}<br>
+                    {% endfor %}
                 </div>
 
                 <div class="form-group">
                     <label for="precio">Precio</label>
-                    <input type="number" id="precio" name="preciop" 
-                        value="{{ producto.precio if producto else '' }}" 
-                        required min="1" step="0.01">
+                    <input type="number" id="precio" name="preciop" value="{{ producto.precio }}" required min="1" step="0.01">
                 </div>
 
-                <button name="id_producto" value="{{producto.id_producto}}" type="submit">Guardar</button>
-                <p class="toggle-text">¿Deseas editar otro? <a href="#" id="redirect">Elegir otro Producto</a></p>
+                <div class="form-group">
+                    <label>Tallas disponibles:</label><br>
+                    {% for talla in tallas %}
+                        <input type="checkbox" class="talla-checkbox" name="tallas" value="{{ talla.id_talla }}" data-talla="{{ talla.nombre_talla }}"
+                        {% if talla.id_talla in tallas_con_cantidades %} checked {% endif %}>
+                        {{ talla.nombre_talla }}<br>
+                    {% endfor %}
+                </div>
+
+                <div id="contenedor-cantidades">
+                    {% for id_talla,datos in tallas_con_cantidades.items() %}
+                        <div id="cantidad_{{ id_talla }}">
+                            <label>Cantidad para talla {{ datos.nombre }}:</label>
+                            <input type="number" name="cantidad_{{ id_talla }}" value="{{ datos.cantidad }}" min="0" required>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <button name="id_producto" value="{{ producto.id_producto }}" type="submit">Guardar</button>
+                
+                <p class="toggle-text">¿Deseas editar otro? <a href="#" id="redirect">Elegir otro Producto</a>
+                </p>
             </form>
         </div>
     </div>
+
     <script>
+        const checkboxes = document.querySelectorAll('.talla-checkbox');
+        const contenedorCantidades = document.getElementById('contenedor-cantidades');
         const redirect = document.getElementById('redirect');
 
         redirect.addEventListener('click', (e) => {
             window.location.href = "/mostrar_editar_producto";
+        });
+
+        checkboxes.forEach(chk => {
+            chk.addEventListener('change', () => {
+                const tallaId = chk.value;
+                const nombreTalla = chk.dataset.talla;
+
+                if (chk.checked) {
+                    if (!document.getElementById('cantidad_' + tallaId)) {
+                        const div = document.createElement('div');
+                        div.id = 'cantidad_' + tallaId;
+                        div.innerHTML = `
+                            <label>Cantidad para talla ${nombreTalla}:</label>
+                            <input type="number" name="cantidad_${tallaId}" min="0" required>
+                        `;
+                        contenedorCantidades.appendChild(div);
+                    }
+                } else {
+                    const inputDiv = document.getElementById('cantidad_' + tallaId);
+                    if (inputDiv) {
+                        contenedorCantidades.removeChild(inputDiv);
+                    }
+                }
+            });
         });
     </script>
 </body>

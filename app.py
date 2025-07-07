@@ -1,4 +1,4 @@
-from flask import Flask,request,render_template,redirect, url_for
+from flask import Flask,request,render_template,redirect, url_for,session
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
 import os
@@ -19,12 +19,20 @@ app.config['MAIL_PASSWORD'] = 'fhkz aomg wxuw pxmj'
 app.config['MAIL_DEFAULT_SENDER'] = 'creacionesesmir@gmail.com'
 
 
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
+
+producto_categoria = db.Table('producto_categoria',
+    db.Column('id_producto', db.Integer, db.ForeignKey('producto.id_producto'), primary_key=True),
+    db.Column('id_categoria', db.Integer, db.ForeignKey('categoria.id_categoria'), primary_key=True)
+)
+
 class Ubicacion(db.Model):
     __tablename__ = 'ubicacion'
-    id = db.Column(db.Integer, primary_key=True,autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     direccion = db.Column(db.String(255))
     clientes = db.relationship('Cliente', backref='ubicacion', lazy=True)
-
 
 class Cliente(db.Model):
     __tablename__ = 'cliente'
@@ -33,22 +41,15 @@ class Cliente(db.Model):
     correo = db.Column(db.String(100))
     telefono = db.Column(db.String(15))
     nombre = db.Column(db.String(100))
-    password=db.Column(db.String(100))
+    password = db.Column(db.String(100))
     ubicacion_id = db.Column(db.Integer, db.ForeignKey('ubicacion.id'))
 
 
 class Categoria(db.Model):
     __tablename__ = 'categoria'
-    id_categoria = db.Column(db.Integer, primary_key=True,autoincrement=True)
+    id_categoria = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nombre_categoria = db.Column(db.String(100))
-    productos = db.relationship('Producto', backref='categoria', lazy=True)
-
-
-class Descripcion(db.Model):
-    __tablename__ = 'descripcion'
-    id_descripcion = db.Column(db.Integer, primary_key=True,autoincrement=True)
-    descripcion = db.Column(db.String(100))
-    productos = db.relationship('Producto', backref='comentario', lazy=True)
+    productos = db.relationship('Producto', secondary=producto_categoria, backref='categorias')
 
 
 class Empresa(db.Model):
@@ -61,13 +62,30 @@ class Empresa(db.Model):
 
 class Producto(db.Model):
     __tablename__ = 'producto'
-    id_producto = db.Column(db.Integer, primary_key=True,autoincrement=True)
+    id_producto = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nombre_producto = db.Column(db.String(100))
-    imagen=db.Column(db.String(100))
-    cantidad=db.Column(db.Integer)
-    id_descripcion = db.Column(db.Integer, db.ForeignKey('descripcion.id_descripcion'))
-    id_categoria = db.Column(db.Integer, db.ForeignKey('categoria.id_categoria'))
+    imagen = db.Column(db.String(100))
+    descripcion = db.Column(db.String(100))
     precio = db.Column(db.Numeric(10, 2))
+    inventarios = db.relationship('Inventario', backref='producto', lazy=True)
+
+
+
+class Talla(db.Model):
+    __tablename__ = 'talla'
+    id_talla = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    nombre_talla = db.Column(db.String(10), unique=True, nullable=False)
+    inventarios = db.relationship('Inventario', backref='talla', lazy=True)
+
+
+
+class Inventario(db.Model):
+    __tablename__ = 'inventario'
+    id_inventario = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id_producto = db.Column(db.Integer, db.ForeignKey('producto.id_producto'), nullable=False)
+    id_talla = db.Column(db.Integer, db.ForeignKey('talla.id_talla'), nullable=False)
+    cantidad = db.Column(db.Integer, nullable=False)
+
 
 
 class Compra(db.Model):
@@ -83,6 +101,7 @@ class Factura(db.Model):
     id_compra = db.Column(db.Integer, db.ForeignKey('compra.id_compra'), primary_key=True)
     fecha = db.Column(db.Date)
     monto_total = db.Column(db.Numeric(10, 2))
+
 
 mail = Mail(app)
 
@@ -100,7 +119,23 @@ def index():
 
 @app.route('/catalogo')
 def catalogo():
-    return render_template('catalogo.html')
+    productos = Producto.query.all()
+    tallas = Talla.query.all()
+    tallas_por_producto = {}
+
+    for producto in productos:
+        inventario = Inventario.query.filter_by(id_producto=producto.id_producto).all()
+        tallas_con_cantidades = {}
+
+        for item in inventario:
+            talla = Talla.query.get(item.id_talla)
+            if talla:
+                tallas_con_cantidades[talla.nombre_talla] = item.cantidad
+        
+        tallas_por_producto[producto.id_producto] = tallas_con_cantidades
+
+    return render_template('catalogo.html', productos=productos, tallas_por_producto=tallas_por_producto)
+
 
 @app.route('/inicio_sesion')
 def inicio_sesion():
@@ -111,10 +146,15 @@ def iniciar_Sesion():
     email=request.form['email']
     password=request.form['password']
     exito, mensaje2 = consultas.validar_login(email, password)
+    cliente = Cliente.query.filter_by(correo=email).first()
     if exito:
         if mensaje2==4:
+            session['usuario_id'] = cliente.id_cliente
+            session['correo'] = cliente.correo
             return render_template('admin.html')
         else:
+            session['usuario_id'] = cliente.id_cliente
+            session['correo'] = cliente.correo
             return redirect(url_for('catalogo'))
     else:
         return render_template('inicio_sesion.html', mensaje2=mensaje2)
@@ -135,8 +175,6 @@ def registrarse():
     validacion=consultas.validar_registro(cedula,apellido,correo,telefono,nombre,password,direccion)
     if validacion==2:
        return redirect(url_for('catalogo'))
-    elif validacion==1:
-        return render_template('inicio_sesion.html', mensaje="esta ubicacion ya existe")
     elif validacion==4:
         return render_template('inicio_sesion.html', mensaje="esta cedula ya esta registrada")
     else:
@@ -156,23 +194,28 @@ def recuperar():
 @app.route('/crear_productos')
 def crear_productos():
     categorias = Categoria.query.all()
-    return render_template('crear_productos.html', categorias=categorias)
+    tallas=Talla.query.all()
+    return render_template('crear_productos.html', categorias=categorias,tallas=tallas)
 
 @app.route('/ingresar_productos', methods=['POST'])
 def ingresar_productos():
-    imagen=request.files['imagenp']
-    nombrep=request.form['nombrep']
-    cantidadp=request.form['cantidadp']
-    descripcionp=request.form['descripcionp']
-    categoria=request.form['categoria']
-    preciop=request.form['preciop']
+    imagen = request.files['imagenp']
+    nombrep = request.form['nombrep']
+    descripcionp = request.form['descripcionp']
+    categorias_seleccionadas = request.form.getlist('categorias')
+    preciop = request.form['preciop']
+    tallas_seleccionadas = request.form.getlist('tallas')
 
     if imagen:
         ruta_guardado = os.path.join(app.config['UPLOAD_FOLDER'], imagen.filename)
         imagen.save(ruta_guardado)
-        imagen_nombre=imagen.filename
-        aviso=consultas.guardar_productos(nombrep,cantidadp,descripcionp,categoria,imagen_nombre,preciop)
-        return render_template('crear_productos.html',aviso=aviso)
+        imagen_nombre = imagen.filename
+
+        aviso = consultas.guardar_productos(nombrep, descripcionp, categorias_seleccionadas, imagen_nombre, preciop, tallas_seleccionadas, request.form)
+
+        categorias = Categoria.query.all()
+        tallas = Talla.query.all()
+        return render_template('crear_productos.html', aviso=aviso, categorias=categorias, tallas=tallas)
 
 
 @app.route('/crear_categoria')
@@ -192,31 +235,33 @@ def mostrar_editar_producto():
 
 @app.route('/editar_producto', methods=['POST'])
 def editar_producto():
-    id_producto=request.form['id_p']
+    id_producto = request.form['id_p']
     categorias = Categoria.query.all()
-    producto_Editar=Producto.query.filter_by(id_producto=id_producto).first()
-    descripcion_e=Descripcion.query.filter_by(id_descripcion=producto_Editar.id_descripcion).first()
-    return render_template('formulario_editar_productos.html',categorias=categorias,producto=producto_Editar,descripcion=descripcion_e)
+    tallas = Talla.query.all()
+    producto = Producto.query.get_or_404(id_producto)
+
+    categorias_seleccionadas = [c.id_categoria for c in producto.categorias]
+
+    inventario = Inventario.query.filter_by(id_producto=id_producto).all()
+    tallas_con_cantidades = {}
+    for item in inventario:
+        talla = Talla.query.get(item.id_talla)
+        tallas_con_cantidades[item.id_talla] = {"cantidad": item.cantidad,"nombre": talla.nombre_talla}
+
+
+    return render_template('formulario_editar_productos.html', producto=producto,categorias=categorias,tallas=tallas,categorias_seleccionadas=categorias_seleccionadas,tallas_con_cantidades=tallas_con_cantidades)
+
 @app.route('/actualizar',methods=['POST'])
 def actualizar():
+    id_producto = request.form['id_producto']
     nombre = request.form['nombrep']
-    cantidad = request.form['cantidadp']
     descripcion = request.form['descripcionp']
-    categoria = request.form['categoria']
+    categorias_seleccionadas = request.form.getlist('categorias')
     precio = request.form['preciop']
     imagen = request.files['imagenp']
-    id_producto = request.form['id_producto']
-    aviso=consultas.actualizar(nombre,cantidad,descripcion,categoria,precio,imagen,id_producto)
-    producto = Producto.query.filter_by(id_producto=id_producto).first()
-    descripcion_obj = Descripcion.query.filter_by(id_descripcion=producto.id_descripcion).first()
-    categorias = Categoria.query.all()
-    return render_template(
-        'formulario_editar_productos.html',
-        aviso=aviso,
-        producto=producto,
-        descripcion=descripcion_obj,
-        categorias=categorias
-    )
+    tallas_seleccionadas = request.form.getlist('tallas')
+    aviso = consultas.actualizar(nombre, descripcion, categorias_seleccionadas, precio, imagen, id_producto, tallas_seleccionadas, request.form)
+    return redirect('/mostrar_editar_producto')
 
 if __name__ == '__main__':
     app.run(debug=True)

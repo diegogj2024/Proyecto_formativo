@@ -15,7 +15,7 @@
              <button type="submit" name="id_p" value="{{pro.id_producto}}">
                 <img src="{{ url_for('static', filename='productos/' + pro.imagen) }}" >
                 <h2>{{pro.nombre_producto}}</h2>
-                <p>En esta parte estara la descripcion del producto.</p>
+                <p>{{pro.descripcion}}</p>
             </button>
             {% endfor %}
         </form>

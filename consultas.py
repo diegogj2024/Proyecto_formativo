@@ -1,4 +1,4 @@
-from app import app, db, Cliente, Ubicacion,mail,Message,Producto,Descripcion,Categoria,os
+from app import app, db, Cliente, Ubicacion,mail,Message,Producto,Categoria,os,Inventario,session
 from werkzeug.utils import secure_filename
 import secrets
 
@@ -92,63 +92,86 @@ def guardar_Categoria(categoria):
             return aviso
         
         
-def guardar_productos(nombrep,cantidadp,descripcionp,categoriap,imagen_nombre,preciop):
+def guardar_productos(nombrep, descripcionp, categorias, imagen_nombre, preciop, tallas, form):
     with app.app_context():
         producto = Producto.query.filter_by(nombre_producto=nombrep).first()
-        cantidadp = int(cantidadp)
         preciop = float(preciop)
-        if cantidadp <= 0 or preciop <= 0:
-            aviso="El precio y/o cantidad debe ser mayor a 0, intente nuevamente"
-            return aviso
+
+        if preciop <= 0:
+            return "El precio debe ser mayor a 0, intente nuevamente"
 
         if producto:
-            aviso="este producto ya esta registrado"
-            return aviso
-        else:
-            nueva_descripcion=Descripcion(
-                descripcion=descripcionp,
-            )
-            db.session.add(nueva_descripcion)
-            db.session.commit()
+            return "Este producto ya está registrado"
 
-            iddescripcion=Descripcion.query.filter_by(descripcion=descripcionp).first()
-            nuevo_producto=Producto(
-                nombre_producto=nombrep,
-                imagen=imagen_nombre,
-                cantidad=cantidadp,
-                id_descripcion=iddescripcion.id_descripcion,
-                id_categoria=categoriap,
-                precio=preciop
-            )
+        nuevo_producto = Producto(
+            nombre_producto=nombrep,
+            imagen=imagen_nombre,
+            descripcion=descripcionp,
+            precio=preciop
+        )
 
-            db.session.add(nuevo_producto)
-            db.session.commit()
-            aviso="producto guardado exitosamente"
-            return aviso
+        db.session.add(nuevo_producto)
+        db.session.commit()
+
+        for id_categoria in categorias:
+            categoria = Categoria.query.get(int(id_categoria))
+            if categoria:
+                nuevo_producto.categorias.append(categoria)
+
+        db.session.commit()
+
+        for id_talla in tallas:
+            cantidad_key = f'cantidad_{id_talla}'
+            cantidad = int(form.get(cantidad_key, 0))
+
+            if cantidad <= 0:
+                continue
+
+            inventario = Inventario(
+                id_producto=nuevo_producto.id_producto,
+                id_talla=int(id_talla),
+                cantidad=cantidad
+            )
+            db.session.add(inventario)
+
+        db.session.commit()
+        return "Producto guardado exitosamente"
+
         
-def actualizar(nombre,cantidad,descripcion,categoria,precio,imagen,id_producto):
-    with app.app_context():
-        try:
-            producto = Producto.query.filter_by(id_producto=id_producto).first()
-            descripcion1=Descripcion.query.filter_by(id_descripcion=producto.id_descripcion).first()
-            if producto:
-               filename = secure_filename(imagen.filename)
-               ruta = os.path.join('static/productos', filename)
-               if not os.path.exists(ruta):
-                        imagen.save(ruta)
-                        producto.imagen = filename
+def actualizar(nombre, descripcion, categorias, precio, imagen, id_producto, tallas, form):
+     with app.app_context():
+        producto = Producto.query.get(id_producto)
+        if not producto:
+            return "Producto no encontrado"
 
-               producto.nombre_producto = nombre
-               producto.cantidad = cantidad
-               producto.id_categoria = categoria
-               producto.precio = precio
-               descripcion1.descripcion=descripcion
-               db.session.commit()
-               aviso="editado con exito"
-               return aviso
-        except Exception as e:
-            aviso="error "
-            return aviso
+        producto.nombre_producto = nombre
+        producto.descripcion = descripcion
+        producto.precio = float(precio)
 
+        if imagen and imagen.filename != "":
+            ruta = os.path.join(app.config['UPLOAD_FOLDER'], imagen.filename)
+            if not os.path.exists(ruta):
+                ruta_antigua = os.path.join(app.config['UPLOAD_FOLDER'], producto.imagen)
+                if os.path.exists(ruta_antigua):
+                    os.remove(ruta_antigua)
+                imagen.save(ruta)
+            producto.imagen = imagen.filename
 
+        producto.categorias.clear()
+        for id_cat in categorias:
+            categoria = Categoria.query.get(int(id_cat))
+            if categoria:
+                producto.categorias.append(categoria)
 
+        Inventario.query.filter_by(id_producto=id_producto).delete()
+        for id_talla in tallas:
+            cantidad = int(form.get(f'cantidad_{id_talla}', 0))
+            if cantidad > 0:
+                inventario = Inventario(id_producto=id_producto, id_talla=int(id_talla), cantidad=cantidad)
+                db.session.add(inventario)
+
+        db.session.commit()
+        return "Producto actualizado correctamente"
+
+def logout():
+    session.clear()
