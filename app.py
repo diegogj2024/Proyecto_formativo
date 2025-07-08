@@ -104,7 +104,20 @@ class Factura(db.Model):
     fecha = db.Column(db.Date)
     monto_total = db.Column(db.Numeric(10, 2))
 
+class Carrito(db.Model):
+    __tablename__ = 'carrito'
+    id_carrito = db.Column(db.Integer, primary_key=True,autoincrement=True)
+    cedula = db.Column(db.Integer, db.ForeignKey('cliente.cedula'), nullable=False)
+    detalles = db.relationship('DetalleCarrito', backref='carrito', cascade="all, delete-orphan")
 
+class DetalleCarrito(db.Model):
+    __tablename__ = 'detallecarrito'
+    id_detalle = db.Column(db.Integer, primary_key=True,autoincrement=True)
+    id_carrito = db.Column(db.Integer, db.ForeignKey('carrito.id_carrito'), nullable=False)
+    id_inventario = db.Column(db.Integer, db.ForeignKey('inventario.id_inventario'), nullable=False)
+    cantidad = db.Column(db.Integer, default=1)
+    inventario = db.relationship('Inventario')
+    
 mail = Mail(app)
 
 db.init_app(app)
@@ -122,7 +135,6 @@ def index():
 @app.route('/catalogo')
 def catalogo():
     productos = Producto.query.all()
-    tallas = Talla.query.all()
     tallas_por_producto = {}
 
     for producto in productos:
@@ -132,7 +144,10 @@ def catalogo():
         for item in inventario:
             talla = Talla.query.get(item.id_talla)
             if talla:
-                tallas_con_cantidades[talla.nombre_talla] = item.cantidad
+                tallas_con_cantidades[talla.id_talla] ={
+                    'nombre_talla': talla.nombre_talla,
+                    'cantidad': item.cantidad
+                }
         
         tallas_por_producto[producto.id_producto] = tallas_con_cantidades
 
