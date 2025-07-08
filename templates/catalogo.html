@@ -34,13 +34,17 @@
                     <p class="price">${{pro.precio}}</p>
                     <div class="tallas">
                         <strong>Tallas disponibles:</strong>
+                    <form action="" method="POST">
                             <ul>
-                                {% for talla, cantidad in tallas_por_producto[pro.id_producto].items() %}
-                                    <li>{{ talla }} - Cantidad: {{ cantidad }}</li>
+                                {% for id_talla, datos in tallas_por_producto[pro.id_producto].items() %}
+                                    <input type="radio" class="talla-checkbox" name="tallas" value="{{ id_talla }}" data-talla="{{ datos.nombre_talla }}" checked>
+                                    {{ datos.nombre_talla }} - Cantidad: {{ datos.cantidad }}<br>
                                 {% endfor %}
+
                             </ul>
                     </div>
                     <button data-product-id="{{pro.id_producto}}">Añadir al Carrito</button>
+                    </form>
                 </div>
             {% endfor %}
         </div>
