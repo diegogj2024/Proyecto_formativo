@@ -1,4 +1,4 @@
-from flask import Flask,request,render_template,redirect, url_for,session
+from flask import Flask,request,render_template,redirect, url_for,session,flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
 import os
@@ -135,7 +135,7 @@ def index():
 @app.route('/catalogo')
 def catalogo():
     productos = Producto.query.all()
-    tallas_por_producto = {}
+    tallas_por_producto = {} 
 
     for producto in productos:
         inventario = Inventario.query.filter_by(id_producto=producto.id_producto).all()
@@ -191,7 +191,7 @@ def registrarse():
     telefono=request.form['telefono']
     validacion=consultas.validar_registro(cedula,apellido,correo,telefono,nombre,password,direccion)
     if validacion==2:
-       return redirect(url_for('catalogo'))
+       return redirect(url_for('iniciar_sesion'))
     elif validacion==4:
         return render_template('inicio_sesion.html', mensaje="esta cedula ya esta registrada")
     else:
@@ -279,6 +279,23 @@ def actualizar():
     tallas_seleccionadas = request.form.getlist('tallas')
     aviso = consultas.actualizar(nombre, descripcion, categorias_seleccionadas, precio, imagen, id_producto, tallas_seleccionadas, request.form)
     return redirect('/mostrar_editar_producto')
+
+@app.route('/carrito')
+def carrito():
+    return "a"
+
+@app.route('/guardar_en_carrito',methods=['POST'])
+def guardar_en_carrito():
+    id_producto = request.form['id_p']
+    id_talla=request.form['talla']
+    if 'usuario_id' in session:
+        flash("si hay gente")
+        return redirect(url_for('catalogo'))
+    else:
+        flash("Debes inicar sesion primero si deseas realizar una compra")
+        return redirect(url_for('catalogo'))
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
