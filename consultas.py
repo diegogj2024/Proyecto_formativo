@@ -1,4 +1,4 @@
-from app import app, db, Cliente, Ubicacion,mail,Message,Producto,Categoria,os,Inventario,session
+from app import app, db, Cliente, Ubicacion,mail,Message,Producto,Categoria,os,Inventario,session,Carrito,DetalleCarrito
 from werkzeug.utils import secure_filename
 import secrets
 
@@ -175,3 +175,33 @@ def actualizar(nombre, descripcion, categorias, precio, imagen, id_producto, tal
 
 def logout():
     session.clear()
+
+def guardar_detalles_carrito(id_produ,cantidad,id_talla_seleccionada):
+    with app.app_context():
+        cedula_U=session.get('usuario_id')
+        verificar_carro=Carrito.query.filter_by(cedula=cedula_U).first()
+        inventario = Inventario.query.filter_by(id_producto=id_produ, id_talla=id_talla_seleccionada).first()
+        if verificar_carro:
+            nuevo_detalle_Carrito=DetalleCarrito(
+                id_carrito=verificar_carro.id_carrito,
+                id_inventario=inventario.id_inventario,
+                cantidad=cantidad
+            )
+            db.session.add(nuevo_detalle_Carrito)
+            db.session.commit()
+        else:
+            nuevo_carrito=Carrito(
+                cedula=cedula_U
+            )
+            db.session.add(nuevo_carrito)
+            db.session.commit()
+            verificar_carro2=Carrito.query.filter_by(cedula=cedula_U).first()
+
+            nuevo_detalle_Carrito=DetalleCarrito(
+                id_carrito=verificar_carro2.id_carrito,
+                id_inventario=inventario.id_inventario,
+                cantidad=cantidad
+            )
+            db.session.add(nuevo_detalle_Carrito)
+            db.session.commit()
+
