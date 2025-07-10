@@ -191,7 +191,7 @@ def registrarse():
     telefono=request.form['telefono']
     validacion=consultas.validar_registro(cedula,apellido,correo,telefono,nombre,password,direccion)
     if validacion==2:
-       return redirect(url_for('iniciar_sesion'))
+       return redirect(url_for('inicio_sesion.html'))
     elif validacion==4:
         return render_template('inicio_sesion.html', mensaje="esta cedula ya esta registrada")
     else:
@@ -286,10 +286,12 @@ def carrito():
 
 @app.route('/guardar_en_carrito',methods=['POST'])
 def guardar_en_carrito():
-    id_producto = request.form['id_p']
-    id_talla=request.form['talla']
+    id_produ = request.form.get("id_p")
+    id_talla_seleccionada = request.form.get(f"talla_{id_produ}")
+    cantidad = request.form.get(f"cantidad_{id_talla_seleccionada}")
     if 'usuario_id' in session:
-        flash("si hay gente")
+        consultas.guardar_detalles_carrito(id_produ,cantidad,id_talla_seleccionada)
+        flash("guardao")
         return redirect(url_for('catalogo'))
     else:
         flash("Debes inicar sesion primero si deseas realizar una compra")
