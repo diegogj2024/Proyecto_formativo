@@ -134,6 +134,7 @@ def index():
 
 @app.route('/catalogo')
 def catalogo():
+    cedula_U=session.get('usuario_id')
     productos = Producto.query.all()
     tallas_por_producto = {} 
 
@@ -151,7 +152,7 @@ def catalogo():
         
         tallas_por_producto[producto.id_producto] = tallas_con_cantidades
 
-    return render_template('catalogo.html', productos=productos, tallas_por_producto=tallas_por_producto)
+    return render_template('catalogo.html', productos=productos, tallas_por_producto=tallas_por_producto,cedula_U=cedula_U)
 
 
 @app.route('/inicio_sesion')
@@ -282,16 +283,31 @@ def actualizar():
 
 @app.route('/carrito')
 def carrito():
-    return "a"
+    cedula_U=session.get('usuario_id')
+    carrito=Carrito.query.filter_by(cedula=cedula_U).first()
+    datos=[]
+    detalles = DetalleCarrito.query.filter_by(id_carrito=carrito.id_carrito).all()
+    for detalle in detalles:
+        inventario = Inventario.query.filter_by(id_inventario=detalle.id_inventario).first()
+        producto=Producto.query.filter_by(id_producto=inventario.id_producto).first()
+        talla=Talla.query.filter_by(id_talla=inventario.id_talla).first()
+        datos.append({
+            'carrito': carrito,
+            'detalle': detalle,
+            'inventario': inventario,
+            'producto':producto,
+            'talla': talla
+        })
+    return render_template('carrito.html',datos=datos)
 
 @app.route('/guardar_en_carrito',methods=['POST'])
 def guardar_en_carrito():
-    id_produ = request.form.get("id_p")
-    id_talla_seleccionada = request.form.get(f"talla_{id_produ}")
-    cantidad = request.form.get(f"cantidad_{id_talla_seleccionada}")
     if 'usuario_id' in session:
+        id_produ = request.form.get("id_p")
+        id_talla_seleccionada = request.form.get(f"talla_{id_produ}")
+        cantidad = request.form.get(f"cantidad_{id_talla_seleccionada}")
         consultas.guardar_detalles_carrito(id_produ,cantidad,id_talla_seleccionada)
-        flash("guardao")
+        flash("guardao en el carrito")
         return redirect(url_for('catalogo'))
     else:
         flash("Debes inicar sesion primero si deseas realizar una compra")

@@ -25,9 +25,12 @@
 
     <nav>
       <a href="#">Buscar</a>
-      <a href="#">Mi Carrito</a>
-      <a href="#" id="loginLink">Iniciar Sesión</a>
-      <a href="#" id="registerLink">Registrarse</a>
+      {% if cedula_U %}
+        <a href="{{ url_for('carrito') }}">Mi Carrito</a>
+      {% else %}
+        <a href="#" id="loginLink">Iniciar Sesión</a>
+        <a href="#" id="registerLink">Registrarse</a>
+      {% endif %}
     </nav>
   </header>
 
