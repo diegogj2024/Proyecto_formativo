@@ -12,6 +12,7 @@
     <div>
 
             {% for item in datos %}
+                    <img src="{{ url_for('static', filename='productos/' + item.producto.imagen) }}" alt="">
                     <p>{{ item.producto.nombre_producto}}</p>
                     <p>{{ item.talla.nombre_talla }}</p>
                     <p>{{ item.detalle.cantidad }}</p>

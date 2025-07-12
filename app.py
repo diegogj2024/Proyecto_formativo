@@ -134,6 +134,7 @@ def index():
 
 @app.route('/catalogo')
 def catalogo():
+    cedula_U=session.get('usuario_id')
     productos = Producto.query.all()
     tallas_por_producto = {} 
 
@@ -151,7 +152,7 @@ def catalogo():
         
         tallas_por_producto[producto.id_producto] = tallas_con_cantidades
 
-    return render_template('catalogo.html', productos=productos, tallas_por_producto=tallas_por_producto)
+    return render_template('catalogo.html', productos=productos, tallas_por_producto=tallas_por_producto,cedula_U=cedula_U)
 
 
 @app.route('/inicio_sesion')
@@ -301,10 +302,10 @@ def carrito():
 
 @app.route('/guardar_en_carrito',methods=['POST'])
 def guardar_en_carrito():
-    id_produ = request.form.get("id_p")
-    id_talla_seleccionada = request.form.get(f"talla_{id_produ}")
-    cantidad = request.form.get(f"cantidad_{id_talla_seleccionada}")
     if 'usuario_id' in session:
+        id_produ = request.form.get("id_p")
+        id_talla_seleccionada = request.form.get(f"talla_{id_produ}")
+        cantidad = request.form.get(f"cantidad_{id_talla_seleccionada}")
         consultas.guardar_detalles_carrito(id_produ,cantidad,id_talla_seleccionada)
         flash("guardao en el carrito")
         return redirect(url_for('catalogo'))
