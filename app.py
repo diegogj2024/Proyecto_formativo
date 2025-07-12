@@ -18,6 +18,8 @@ app.config['MAIL_USERNAME'] = 'creacionesesmir@gmail.com'
 app.config['MAIL_PASSWORD'] = 'fhkz aomg wxuw pxmj'
 app.config['MAIL_DEFAULT_SENDER'] = 'creacionesesmir@gmail.com'
 
+app.config['SESSION_PERMANENT'] = False
+
 app.secret_key = 'f45@sdA54f!asd9wq8e*as'
 
 
