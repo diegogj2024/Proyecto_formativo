@@ -4,15 +4,16 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: linear-gradient(135deg, #71b7e6, #9b59b6);
+    background: #f7d7e8;
     margin: 0;
     color: #333;
 }
 
 .container {
+    border:#3b29df solid 1px;
     background-color: #ffffff;
     padding: 40px;
-    border-radius: 12px;
+    border-radius: 15px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     text-align: center;
     width: 100%;
