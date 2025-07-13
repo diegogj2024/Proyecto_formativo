@@ -194,7 +194,7 @@ def registrarse():
     telefono=request.form['telefono']
     validacion=consultas.validar_registro(cedula,apellido,correo,telefono,nombre,password,direccion)
     if validacion==2:
-       return redirect(url_for('inicio_sesion.html'))
+        return redirect(url_for('inicio_sesion.html', mensaje = "Usuario registrado correctamente"))
     elif validacion==4:
         return render_template('inicio_sesion.html', mensaje="esta cedula ya esta registrada")
     else:

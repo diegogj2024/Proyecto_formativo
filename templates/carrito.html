@@ -4,21 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>editar productos</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos_editar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos_catalogo.css') }}">
 </head>
 <body>
-    <div id="Titulo_div"> <h1>carrito de compras</h1></div>
-    <a href="{{ url_for('catalogo') }}"><button id="Menu_boton">Atras</button></a>
-    <div>
+<header>
+    <div class="contenedor_logo">
+        <div class="Logo">
+            <img src="{{ url_for('static', filename='css/multimedia/logo.png') }}" alt="Logo Creaciones Esmir">
+        </div>
+    </div>
 
-            {% for item in datos %}
+    <nav>
+        <a href="{{ url_for('catalogo') }}">Atrás</a>
+    </nav>
+</header>
+
+    <div class="container">
+        <h2>Carrito de compras</h2>
+        <div class="product-grid" id="productGrid">
+            <div class="product-card">
+                {% for item in datos %}
                     <img src="{{ url_for('static', filename='productos/' + item.producto.imagen) }}" alt="">
                     <p>{{ item.producto.nombre_producto}}</p>
                     <p>{{ item.talla.nombre_talla }}</p>
                     <p>{{ item.detalle.cantidad }}</p>
                     <p>{{ item.producto.precio }}</p>
                     <p>----------------------------</p>
-            {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
     </div>
+
+    <footer>
+        <p>&copy; 2025 Creaciones Esmir. Todos los derechos reservados.</p>
+    </footer>
+
 </body>
 </html>
