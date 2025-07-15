@@ -173,7 +173,7 @@ def actualizar(nombre, descripcion, categorias, precio, imagen, id_producto, tal
         db.session.commit()
         return "Producto actualizado correctamente"
 
-def logout():
+def cerrar_Sesion():
     session.clear()
 
 def guardar_detalles_carrito(id_produ,cantidad,id_talla_seleccionada):

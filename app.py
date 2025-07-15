@@ -132,12 +132,14 @@ with app.app_context():
     
 @app.route('/')
 def index():
-    return render_template('index.html')
+    cedula=session.get('usuario_id')
+    return render_template('index.html',cedula=cedula)
 
 @app.route('/catalogo')
 def catalogo():
     cedula_U=session.get('usuario_id')
     productos = Producto.query.all()
+    carro=Carrito.query.filter_by(cedula=cedula_U).first()
     tallas_por_producto = {} 
 
     for producto in productos:
@@ -154,7 +156,7 @@ def catalogo():
         
         tallas_por_producto[producto.id_producto] = tallas_con_cantidades
 
-    return render_template('catalogo.html', productos=productos, tallas_por_producto=tallas_por_producto,cedula_U=cedula_U)
+    return render_template('catalogo.html', productos=productos, tallas_por_producto=tallas_por_producto,cedula_U=cedula_U,carro=carro)
 
 
 @app.route('/inicio_sesion')
@@ -194,7 +196,7 @@ def registrarse():
     telefono=request.form['telefono']
     validacion=consultas.validar_registro(cedula,apellido,correo,telefono,nombre,password,direccion)
     if validacion==2:
-       return redirect(url_for('inicio_sesion.html'))
+       return redirect(url_for('inicio_sesion'))
     elif validacion==4:
         return render_template('inicio_sesion.html', mensaje="esta cedula ya esta registrada")
     else:
@@ -315,7 +317,11 @@ def guardar_en_carrito():
         flash("Debes inicar sesion primero si deseas realizar una compra")
         return redirect(url_for('catalogo'))
 
-
+@app.route('/cerrar_sesion')
+def cerrar_sesion():
+    consultas.cerrar_Sesion()
+    cedula=session.get('usuario_id')
+    return render_template('index.html',cedula=cedula)
 
 if __name__ == '__main__':
     app.run(debug=True)
