@@ -22,9 +22,6 @@ app.config['SESSION_PERMANENT'] = False
 
 app.secret_key = 'f45@sdA54f!asd9wq8e*as'
 
-
-from flask_sqlalchemy import SQLAlchemy
-
 db = SQLAlchemy()
 
 producto_categoria = db.Table('producto_categoria',
