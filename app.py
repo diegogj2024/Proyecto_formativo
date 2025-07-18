@@ -47,7 +47,7 @@ class Cliente(db.Model):
 
 
 class Categoria(db.Model):
-    __tablename__ = 'categoria'
+    __tablename__ = 'categoria'  
     id_categoria = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nombre_categoria = db.Column(db.String(100))
     productos = db.relationship('Producto', secondary=producto_categoria, backref='categorias')
