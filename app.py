@@ -287,6 +287,7 @@ def carrito():
     cedula_U=session.get('usuario_id')
     carrito=Carrito.query.filter_by(cedula=cedula_U).first()
     datos=[]
+    acumulador=0
     detalles = DetalleCarrito.query.filter_by(id_carrito=carrito.id_carrito).all()
     for detalle in detalles:
         inventario = Inventario.query.filter_by(id_inventario=detalle.id_inventario).first()
@@ -299,7 +300,12 @@ def carrito():
             'producto':producto,
             'talla': talla
         })
-    return render_template('carrito.html',datos=datos)
+    for item in datos:
+        precio=item['producto'].precio 
+        cantidad=item['detalle'].cantidad
+        monto=precio*cantidad
+        acumulador+=monto
+    return render_template('carrito.html',datos=datos,acumulador=acumulador)
 
 @app.route('/guardar_en_carrito',methods=['POST'])
 def guardar_en_carrito():
@@ -322,28 +328,16 @@ def cerrar_sesion():
 
 @app.route('/compra')
 def compra():
+   
+    return render_template('compra.html')
+
+@app.route('/Actualizar_usuario')
+def Actualizar_usuario():
     cedula_U=session.get('usuario_id')
-    carrito=Carrito.query.filter_by(cedula=cedula_U).first()
-    detalles = DetalleCarrito.query.filter_by(id_carrito=carrito.id_carrito).all()
-    datos=[]
-    acumulador=0
-    for detalle in detalles:
-        inventario = Inventario.query.filter_by(id_inventario=detalle.id_inventario).first()
-        producto=Producto.query.filter_by(id_producto=inventario.id_producto).first()
-        talla=Talla.query.filter_by(id_talla=inventario.id_talla).first()
-        datos.append({
-            'carrito': carrito,
-            'detalle': detalle,
-            'inventario': inventario,
-            'producto':producto,
-            'talla': talla
-        })
-    for item in datos:
-        precio=item['producto'].precio 
-        cantidad=item['detalle'].cantidad
-        monto=precio*cantidad
-        acumulador+=monto
-    return render_template('compra.html',acumulador=acumulador)
+    cliente =Cliente.query.filter_by(cedula=cedula_U).first()
+    ubicacion=Ubicacion.query.filter_by(id=cliente.ubicacion_id).first()
+    return render_template('actualizar_datos.html',cliente=cliente,ubicacion=ubicacion)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
