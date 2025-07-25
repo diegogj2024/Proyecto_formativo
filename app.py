@@ -6,7 +6,7 @@ db = SQLAlchemy()
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] ='postgresql://root:yKKnLeAD9yFZvbmdc7qL1jagKw50qxx8@dpg-d1d9bk15pdvs73ahmfv0-a.oregon-postgres.render.com/esmir_krng'
+app.config['SQLALCHEMY_DATABASE_URI'] ='postgresql://root:iwTU47llUDaJ5Nv5gB2xZoJ8bYlyIVja@dpg-d21vi3qdbo4c73emg960-a.oregon-postgres.render.com/esmir_buu7'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 app.config['UPLOAD_FOLDER'] = 'static/productos'
@@ -287,6 +287,7 @@ def carrito():
     cedula_U=session.get('usuario_id')
     carrito=Carrito.query.filter_by(cedula=cedula_U).first()
     datos=[]
+    acumulador=0
     detalles = DetalleCarrito.query.filter_by(id_carrito=carrito.id_carrito).all()
     for detalle in detalles:
         inventario = Inventario.query.filter_by(id_inventario=detalle.id_inventario).first()
@@ -299,7 +300,12 @@ def carrito():
             'producto':producto,
             'talla': talla
         })
-    return render_template('carrito.html',datos=datos)
+    for item in datos:
+        precio=item['producto'].precio 
+        cantidad=item['detalle'].cantidad
+        monto=precio*cantidad
+        acumulador+=monto
+    return render_template('carrito.html',datos=datos,acumulador=acumulador)
 
 @app.route('/guardar_en_carrito',methods=['POST'])
 def guardar_en_carrito():
@@ -319,6 +325,33 @@ def cerrar_sesion():
     consultas.cerrar_Sesion()
     cedula=session.get('usuario_id')
     return render_template('index.html',cedula=cedula)
+
+@app.route('/compra')
+def compra():
+   
+    return render_template('compra.html')
+
+@app.route('/Actualizar_usuario')
+def Actualizar_usuario():
+    cedula_U=session.get('usuario_id')
+    cliente =Cliente.query.filter_by(cedula=cedula_U).first()
+    ubicacion=Ubicacion.query.filter_by(id=cliente.ubicacion_id).first()
+    return render_template('actualizar_datos.html',cliente=cliente,ubicacion=ubicacion)
+
+@app.route('/actualizar_al_usuario',methods=['POST'])
+def actualizar_al_usuario():
+    nombre=request.form['nombreU']
+    apellido=request.form['apellidoU']
+    correo=request.form['correoU']
+    telefono=request.form['telefonoU']
+    password=request.form['password']
+    ubicacion=request.form['ubicacion']
+    aviso=consultas.actualizar_usuario(nombre,apellido,correo,telefono,password,ubicacion)
+    cedula_U=session.get('usuario_id')
+    cliente =Cliente.query.filter_by(cedula=cedula_U).first()
+    ubicacion=Ubicacion.query.filter_by(id=cliente.ubicacion_id).first()
+    return render_template('actualizar_datos.html',cliente=cliente,ubicacion=ubicacion,aviso=aviso)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
