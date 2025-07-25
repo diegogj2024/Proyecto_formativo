@@ -9,9 +9,12 @@
 <body>
     <div class="container" id="formContainer">
         <div class="login-form" id="loginForm">
-          <form id="login" action="" method="POST" enctype="multipart/form-data">
+            {% if aviso %}
+                <p style="color:red;">{{ aviso }}</p>
+            {% endif %}
+          <form id="login" action="/actualizar_al_usuario" method="POST" enctype="multipart/form-data">
             <div class="form-group">
-                    <label for="nombrep">Nombre del Usuario</label>
+                    <label for="nombreU">Nombre del Usuario</label>
                     <input type="text" id="nombreU" name="nombreU" value="{{ cliente.nombre }}" required>
             </div>
             <div class="form-group">
@@ -31,9 +34,10 @@
                     <input type="text" id="password" name="password" value="{{ cliente.password }}" required>
             </div>
             <div class="form-group">
-                    <label for="password">Ubicacion del Usuario</label>
-                    <input type="text" id="password" name="password" value="{{ ubicacion.direccion }}" required>
+                    <label for="ubicacion">Ubicacion del Usuario</label>
+                    <input type="text" id="ubicacion" name="ubicacion" value="{{ ubicacion.direccion }}" required>
             </div>
+            <button type="submit">Guardar</button>
           </form>
           <a href="javascript:history.back()">⬅️ Volver atrás</a>
 </body>

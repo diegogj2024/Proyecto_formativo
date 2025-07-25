@@ -205,3 +205,28 @@ def guardar_detalles_carrito(id_produ,cantidad,id_talla_seleccionada):
             db.session.add(nuevo_detalle_Carrito)
             db.session.commit()
 
+def actualizar_usuario(nombre,apellido,correo,telefono,password,ubicacion):
+    with app.app_context():
+        cedula = session.get('usuario_id')
+        cliente = Cliente.query.filter_by(cedula=cedula).first()
+
+        try:
+            correo_existente = Cliente.query.filter(Cliente.correo == correo, Cliente.cedula != cedula).first()
+        
+            if correo_existente:
+                return "Este correo ya existe"
+
+            usuario = Cliente.query.get(cedula)
+            ubicacion_obj = Ubicacion.query.get(usuario.ubicacion_id)
+            usuario.nombre = nombre
+            usuario.apellido = apellido
+            usuario.correo = correo
+            usuario.telefono = telefono
+            usuario.password = password
+            ubicacion_obj.direccion = ubicacion  
+            db.session.commit()
+            return "Se actualizó con éxito"
+
+        except Exception as e:
+            return f"Error: {str(e)}"
+
