@@ -91,11 +91,19 @@ class Inventario(db.Model):
 
 class Compra(db.Model):
     __tablename__ = 'compra'
-    id_compra = db.Column(db.Integer, primary_key=True)
+    id_compra = db.Column(db.Integer, primary_key=True, autoincrement=True)
     cedula = db.Column(db.BigInteger, db.ForeignKey('cliente.cedula'))
-    id_producto = db.Column(db.Integer, db.ForeignKey('producto.id_producto'))
-    factura = db.relationship('Factura', backref='compra', uselist=False)
+    detalle_compra = db.relationship('DetalleCompra', backref='compra', uselist=False)
 
+
+class DetalleCompra(db.Model):
+    __tablename__='detallecompra'
+    id_compra = db.Column(db.Integer, db.ForeignKey('compra.id_compra'))
+    id_detalle_compra=db.Column(db.Integer, primary_key=True, autoincrement=True)
+    nombre_producto=db.Column(db.String(20),nullable=False)
+    talla=db.Column(db.String(5), nullable=False)
+    cantidad=db.Column(db.Integer, nullable=False)
+    precio_producto=db.Column(db.Integer, nullable=False)
 
 class Factura(db.Model):
     __tablename__ = 'factura'
@@ -328,8 +336,24 @@ def cerrar_sesion():
 
 @app.route('/compra')
 def compra():
-   
-    return render_template('compra.html')
+    cedula_U=session.get('usuario_id')
+    carrito=Carrito.query.filter_by(cedula=cedula_U).first()
+    datos=[]
+    acumulador=0
+    detalles = DetalleCarrito.query.filter_by(id_carrito=carrito.id_carrito).all()
+    for detalle in detalles:
+        inventario = Inventario.query.filter_by(id_inventario=detalle.id_inventario).first()
+        producto=Producto.query.filter_by(id_producto=inventario.id_producto).first()
+        talla=Talla.query.filter_by(id_talla=inventario.id_talla).first()
+        datos.append({
+            'carrito': carrito,
+            'detalle': detalle,
+            'inventario': inventario,
+            'producto':producto,
+            'talla': talla
+        })
+    consultas.guardar_compra(datos)
+    return redirect(url_for('catalogo'))
 
 @app.route('/Actualizar_usuario')
 def Actualizar_usuario():
