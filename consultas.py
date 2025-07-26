@@ -1,7 +1,7 @@
-from app import app, db, Cliente, Ubicacion,mail,Message,Producto,Categoria,os,Inventario,session,Carrito,DetalleCarrito
+from app import app, db, Cliente, Ubicacion,mail,Message,Producto,Categoria,os,Inventario,session,Carrito,DetalleCarrito,Compra,DetalleCompra
 from werkzeug.utils import secure_filename
 import secrets
-
+from flask import flash
 def validar_login(email, password):
     with app.app_context():
         usuario = Cliente.query.filter_by(correo=email).first()
@@ -204,4 +204,59 @@ def guardar_detalles_carrito(id_produ,cantidad,id_talla_seleccionada):
             )
             db.session.add(nuevo_detalle_Carrito)
             db.session.commit()
+
+def actualizar_usuario(nombre,apellido,correo,telefono,password,ubicacion):
+    with app.app_context():
+        cedula = session.get('usuario_id')
+        cliente = Cliente.query.filter_by(cedula=cedula).first()
+
+        try:
+            correo_existente = Cliente.query.filter(Cliente.correo == correo, Cliente.cedula != cedula).first()
+        
+            if correo_existente:
+                return "Este correo ya existe"
+
+            usuario = Cliente.query.get(cedula)
+            ubicacion_obj = Ubicacion.query.get(usuario.ubicacion_id)
+            usuario.nombre = nombre
+            usuario.apellido = apellido
+            usuario.correo = correo
+            usuario.telefono = telefono
+            usuario.password = password
+            ubicacion_obj.direccion = ubicacion  
+            db.session.commit()
+            return "Se actualizó con éxito"
+
+        except Exception as e:
+            return f"Error: {str(e)}"
+
+def guardar_compra(datos):
+    with app.app_context():
+       cedula=session.get('usuario_id')
+       nueva_compra=Compra(
+       cedula=cedula
+       )
+       db.session.add(nueva_compra)
+       db.session.commit()
+       for items in datos:
+            nuevo_detalle_compra=DetalleCompra(
+                id_compra=nueva_compra.id_compra,
+                nombre_producto=items['producto'].nombre_producto,
+                talla=items['talla'].nombre_talla,
+                cantidad=items['detalle'].cantidad,
+                precio_producto=items['producto'].precio
+            )
+            db.session.add(nuevo_detalle_compra)
+            db.session.commit()
+    
+       carro=Carrito.query.filter_by(cedula=cedula).first()
+       if carro:
+            detalles = DetalleCarrito.query.filter_by(id_carrito=carro.id_carrito).all()
+            for detalle in detalles:
+                db.session.delete(detalle)
+                db.session.commit()
+       flash("compra realizada con exito")
+
+    
+
 

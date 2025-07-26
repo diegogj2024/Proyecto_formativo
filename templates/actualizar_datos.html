@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar productos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos_inicio.css') }}">
+</head>
+<body>
+    <div class="container" id="formContainer">
+        <div class="login-form" id="loginForm">
+            {% if aviso %}
+                <p style="color:red;">{{ aviso }}</p>
+            {% endif %}
+          <form id="login" action="/actualizar_al_usuario" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                    <label for="nombreU">Nombre del Usuario</label>
+                    <input type="text" id="nombreU" name="nombreU" value="{{ cliente.nombre }}" required>
+            </div>
+            <div class="form-group">
+                    <label for="apellidoU">Apellidos del Usuario</label>
+                    <input type="text" id="apellidoU" name="apellidoU" value="{{ cliente.apellido }}" required>
+            </div>
+            <div class="form-group">
+                    <label for="correoU">Correo del Usuario</label>
+                    <input type="text" id="correoU" name="correoU" value="{{ cliente.correo }}" required>
+            </div>
+            <div class="form-group">
+                    <label for="telefonoU">telefono del Usuario</label>
+                    <input type="text" id="telefonoU" name="telefonoU" value="{{ cliente.telefono }}" required>
+            </div>
+            <div class="form-group">
+                    <label for="password">Contraseña del Usuario</label>
+                    <input type="text" id="password" name="password" value="{{ cliente.password }}" required>
+            </div>
+            <div class="form-group">
+                    <label for="ubicacion">Ubicacion del Usuario</label>
+                    <input type="text" id="ubicacion" name="ubicacion" value="{{ ubicacion.direccion }}" required>
+            </div>
+            <button type="submit">Guardar</button>
+          </form>
+          <a href="javascript:history.back()">⬅️ Volver atrás</a>
+</body>
+</html>

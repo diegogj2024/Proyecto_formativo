@@ -5,7 +5,7 @@ with app.app_context():
         
         
         nueva_talla=Talla(
-        nombre_talla="S"  
+        nombre_talla="XL"  
         )
 
         db.session.add(nueva_talla)
