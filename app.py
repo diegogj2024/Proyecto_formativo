@@ -345,6 +345,7 @@ def compra():
         inventario = Inventario.query.filter_by(id_inventario=detalle.id_inventario).first()
         producto=Producto.query.filter_by(id_producto=inventario.id_producto).first()
         talla=Talla.query.filter_by(id_talla=inventario.id_talla).first()
+        inventario.cantidad -= detalle.cantidad
         datos.append({
             'carrito': carrito,
             'detalle': detalle,
@@ -353,6 +354,7 @@ def compra():
             'talla': talla
         })
     consultas.guardar_compra(datos)
+    db.session.commit()
     return redirect(url_for('catalogo'))
 
 @app.route('/Actualizar_usuario')

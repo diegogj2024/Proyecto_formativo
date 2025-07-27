@@ -25,7 +25,9 @@
             <p>aca ira el numero de nequi</p><br>
             <p>si el pedido no se ve reflejado en el nequi no se tomara el pedido</p><br>
             <p>total a pagar {{acumulador}}</p><br>
-            <a href="{{ url_for('compra') }}"><button id="Menu_boton">Pagar</button></a>
+            {%if datos%}
+                <a href="{{ url_for('compra') }}"><button id="Menu_boton">Pagar</button></a>
+            {%endif%}
     </div>
 </body>
 </html>

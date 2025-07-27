@@ -39,11 +39,15 @@
       <a href="{{ url_for('index') }}">Menu Principal</a>
     </nav>
   </header>
+<div class="container">
+  <h2>Colección Destacada</h2>
+  <div class="product-grid" id="productGrid">
+    {% for pro in productos %}
+      {% set tallas = tallas_por_producto[pro.id_producto] %}
+      
+      {% set total_stock = tallas.values() | selectattr('cantidad', 'gt', 0) | list | length %}
 
-  <div class="container">
-    <h2>Colección Destacada</h2>
-    <div class="product-grid" id="productGrid">
-      {% for pro in productos %}
+      {% if total_stock > 0 %}
         <div class="product-card">
           <img src="{{ url_for('static', filename='productos/' + pro.imagen) }}" alt="{{ pro.nombre_producto }}">
           <h3>{{ pro.nombre_producto }}</h3>
@@ -54,14 +58,16 @@
             <strong>Tallas disponibles:</strong>
             <form action="/guardar_en_carrito" method="POST" onsubmit="return validarFormulario(this)">
               <ul>
-                {% for id_talla, datos in tallas_por_producto[pro.id_producto].items() %}
-                  <li>
-                    <div class="talla-opcion">
-                      <input type="radio" class="talla-checkbox" name="talla_{{ pro.id_producto }}" value="{{ id_talla }}" data-talla="{{ datos.nombre_talla }}">
-                      {{ datos.nombre_talla }} - Cantidad: {{ datos.cantidad }}
-                      <input type="number" class="cantidad-input" name="cantidad_{{ id_talla }}" min="1" max="{{ datos.cantidad }}" disabled required>
-                    </div>
-                  </li>
+                {% for id_talla, datos in tallas.items() %}
+                  {% if datos.cantidad > 0 %}
+                    <li>
+                      <div class="talla-opcion">
+                        <input type="radio" class="talla-checkbox" name="talla_{{ pro.id_producto }}" value="{{ id_talla }}" data-talla="{{ datos.nombre_talla }}">
+                        {{ datos.nombre_talla }} - Cantidad: {{ datos.cantidad }}
+                        <input type="number" class="cantidad-input" name="cantidad_{{ id_talla }}" min="1" max="{{ datos.cantidad }}" disabled required>
+                      </div>
+                    </li>
+                  {% endif %}
                 {% endfor %}
               </ul>
 
@@ -70,10 +76,10 @@
             </form>
           </div>
         </div>
-      {% endfor %}
-    </div>
+      {% endif %}
+    {% endfor %}
   </div>
-
+</div>
   <footer>
     <p>&copy; 2025 Creaciones Esmir. Todos los derechos reservados.</p>
   </footer>
