@@ -379,5 +379,68 @@ def actualizar_al_usuario():
     return render_template('actualizar_datos.html',cliente=cliente,ubicacion=ubicacion,aviso=aviso)
 
 
+@app.route('/historial_compras')
+def historial_compras():
+    cedula_U = session.get('usuario_id')
+    control = Compra.query.filter_by(cedula=cedula_U).all()
+    datos = []
+
+    for compra in control:
+        historial_detalles = DetalleCompra.query.filter_by(id_compra=compra.id_compra).all()
+        for historial in historial_detalles:
+            datos.append({
+                'historial': historial
+            })
+
+    return render_template('historial.html', datos=datos)
+
+@app.route('/limpiar')
+def limpiar():
+    cedula_U = session.get('usuario_id')
+    carrito = Carrito.query.filter_by(cedula=cedula_U).first()
+
+    if carrito:
+        DetalleCarrito.query.filter_by(id_carrito=carrito.id_carrito).delete()
+        db.session.commit()
+
+    return redirect(url_for('catalogo'))
+
+    
+@app.route('/ventas')
+def ventas():
+    compras = Compra.query.all()
+    datos = []
+
+    for compra in compras:
+        detalles = DetalleCompra.query.filter_by(id_compra=compra.id_compra).all()
+        cedula=Cliente.query.filter_by(cedula=compra.cedula).first()
+        for detalle in detalles:
+            datos.append({
+                'historial': detalle,
+                'compra': compra,
+                'cliente':cedula
+            })
+
+    return render_template('historial_admins.html', datos=datos)
+
+
+@app.route('/editar_categoria')
+def editar_categoria():
+    categoria=Categoria.query.all()
+    return render_template('categorias.html',categoria=categoria)
+
+@app.route('/update_cat',methods=['POST'])
+def update_cat():
+    idcat=request.form['id_categoria']
+    categoria=Categoria.query.filter_by(id_categoria=idcat).first()
+    return render_template('editar_categoria.html',categoria=categoria)
+
+@app.route('/actualizar_cat',methods=['POST'])
+def actualizar_cat():
+    idcat=request.form['idcat']
+    nombrecat=request.form['nombrec']
+    aviso=consultas.actualizar_categoria(idcat,nombrecat)
+    return redirect(url_for('editar_categoria'))
+
 if __name__ == '__main__':
     app.run(debug=True)
