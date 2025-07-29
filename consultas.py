@@ -257,6 +257,9 @@ def guardar_compra(datos):
                 db.session.commit()
        flash("compra realizada con exito")
 
-    
-
-
+def actualizar_categoria(idcat,nombrecat):
+    with app.app_context():
+        actualizar=Categoria.query.get(idcat)
+        actualizar.nombre_categoria=nombrecat
+        db.session.commit()
+        return "categoria actualizada exitosamente"

@@ -39,6 +39,13 @@
             </div>
             <button type="submit">Guardar</button>
           </form>
-          <a href="javascript:history.back()">⬅️ Volver atrás</a>
+          <p class="toggle-text"><a href="#" id="redirect">Atras</a></p>
+    <script>
+        const redirect = document.getElementById('redirect');
+
+        redirect.addEventListener('click', (e) => {
+            window.location.href = "/admin";
+        });
+    </script>
 </body>
 </html>

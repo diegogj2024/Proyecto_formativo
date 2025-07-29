@@ -3,24 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear Categoria</title>
+    <title>Editar productos</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos_inicio.css') }}">
 </head>
 <body>
     <div class="container" id="formContainer">
         <div class="login-form" id="loginForm">
-            <h2>Crear Categoria</h2>
             {% if aviso %}
                 <p style="color:red;">{{ aviso }}</p>
             {% endif %}
-            <form id="login" action="/guardar_categoria" method="POST">
-                <div class="form-group">
-                    <label for="categoria">ingrese el nombre de la categoria</label>
-                    <input type="text" id="categoria" name="categorianame" placeholder="ingrese el nombre de la categoria" required>
-                </div>
-                <button type="submit">Crear</button>
-                <p class="toggle-text"><a href="#" id="redirect">Atras</a></p>
+
+            <form id="login" action="/update_cat" method="POST" enctype="multipart/form-data">
+                {% for cat in categoria %}
+                        <button name="id_categoria" value="{{ cat.id_categoria }}" type="submit">{{cat.nombre_categoria}}</button>
+                {% endfor %}
             </form>
+            <p class="toggle-text"><a href="#" id="redirect">Atras</a></p>
         </div>
     </div>
     <script>
@@ -31,3 +29,4 @@
         });
     </script>
 </body>
+</html>
