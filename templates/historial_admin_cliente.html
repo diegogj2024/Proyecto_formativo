@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Productos Vendidos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos_editar.css') }}">
+</head>
+<body>
+    <h1>Historial de Productos Vendidos</h1>
+    <a href="#" id="redirect">Atrás</a>
+
+    <div id="compras-container">
+        {% for id_compra, items in datos.items() %}
+            <div class="item">
+                <h3>Compra #{{ loop.index }}</h3>
+
+                {% for item in items %}
+                    <p><strong>Nombre del producto:</strong> {{ item.historial.nombre_producto }}</p>
+                    <p><strong>Talla:</strong> {{ item.historial.talla }}</p>
+                    <p>
+                        <strong>Cantidad:</strong> 
+                        <span class="cantidad">{{ item.historial.cantidad }}</span>
+                    </p>
+                    <p>
+                        <strong>Precio unitario:</strong> 
+                        $<span class="precio">{{ item.historial.precio_producto }}</span>
+                    </p>
+                {% endfor %}
+                <p><strong>Total de la compra:</strong> $<span class="total-producto">0</span></p>
+            </div>
+        {% else %}
+            <p>No hay compras registradas.</p>
+        {% endfor %}
+    </div>
+
+    <script>
+        document.getElementById('redirect').addEventListener('click', () => {
+            window.location.href = "/admin";
+        });
+
+        // Calcular total por compra (div.item)
+        const items = document.querySelectorAll('.item');
+
+        items.forEach(item => {
+            let total = 0;
+            const precios = item.querySelectorAll('.precio');
+            const cantidades = item.querySelectorAll('.cantidad');
+
+            for (let i = 0; i < precios.length; i++) {
+                const precio = parseFloat(precios[i].textContent);
+                const cantidad = parseInt(cantidades[i].textContent);
+                if (!isNaN(precio) && !isNaN(cantidad)) {
+                    total += precio * cantidad;
+                }
+            }
+
+            const totalEl = item.querySelector('.total-producto');
+            totalEl.textContent = total.toFixed(2);
+        });
+    </script>
+</body>
+</html>
