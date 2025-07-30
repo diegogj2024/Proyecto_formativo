@@ -1,4 +1,5 @@
 from flask import Flask,request,render_template,redirect, url_for,session,flash
+from collections import defaultdict
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
 import os
@@ -442,5 +443,35 @@ def actualizar_cat():
     aviso=consultas.actualizar_categoria(idcat,nombrecat)
     return redirect(url_for('editar_categoria'))
 
+@app.route('/ver_clientes')
+def ver_clientes():
+    cedula_U = session.get('usuario_id')
+    clientes = Cliente.query.filter(Cliente.cedula != cedula_U).all()
+    
+    datos = []
+    for detalle in clientes:
+        datos.append({
+            'Cliente': detalle,
+        })
+    return render_template('ver_clientes.html', datos=datos)
+
+@app.route('/historial_clientes', methods=['POST'])
+def historial_clientes():
+    cedula = request.form['cedulac']
+    compras = Compra.query.filter_by(cedula=cedula).all()
+
+    datos_agrupados = defaultdict(list)
+
+    for compra in compras:
+        detalles = DetalleCompra.query.filter_by(id_compra=compra.id_compra).all()
+
+        for detalle in detalles:
+            datos_agrupados[compra.id_compra].append({
+                'historial': detalle
+            })
+
+    return render_template('historial_admin_cliente.html', datos=datos_agrupados)
+
+    
 if __name__ == '__main__':
     app.run(debug=True)
