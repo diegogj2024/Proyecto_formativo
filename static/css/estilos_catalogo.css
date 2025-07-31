@@ -7,7 +7,7 @@ body {
             line-height: 1.6;
         }
 
- header {
+header {
     background-color:#6a0dad;
     padding: 20px;
     width: 100%;
@@ -74,6 +74,14 @@ body {
             padding-bottom: 15px;
         }
 
+        h3 {
+            text-align: center;
+            color: #ad0d0d;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+        }
         .product-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -173,4 +181,23 @@ body {
     height: 100%;
     object-fit: contain;
     display: block;
+}
+
+.botoncitouwu { 
+    background-color: #6a0dad;
+    color: white;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95em;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: inline-block;
+    margin: 0 5px;
+}
+
+.botoncitouwu:hover {
+    background-color: #510a8d;
+    transform: translateY(-2px);
 }

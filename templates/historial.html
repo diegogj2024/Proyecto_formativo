@@ -4,14 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historial de Compras</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos_editar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos_catalogo.css') }}">
 </head>
 <body>
-    <a href="#" id="redirect">Atras</a></p>
-    <h1>Historial de Compras</h1>
-    <div id="compras-container">
-        {% for item in datos %}
-            <div class="item">
+    <header>
+        <div class="contenedor_logo">
+            <div class="Logo">
+                <img src="{{ url_for('static', filename='css/multimedia/logo.png') }}" alt="Logo Creaciones Esmir">
+            </div>
+        </div>
+        <nav>
+            <a href="{{ url_for('catalogo') }}">Atras</a>
+        </nav>
+    </header>
+
+    <div id="container">
+        <h2>Historial de Compras</h2>
+        <div class="product-grid" id="productGrid">
+            {% for item in datos %}
+            <div class="product-card">
                 <p><strong>Nombre del producto:</strong> {{ item.historial.nombre_producto }}</p>
                 <p><strong>Talla:</strong> {{ item.historial.talla }}</p>
                 <p>
@@ -24,36 +35,45 @@
                 </p>
                 <p>
                     <strong>Total:</strong> 
-                    $<span class="total-producto">0</span>
+                    $<span class="total-producto">{{ item.historial.precio_producto * item.historial.cantidad}}</span>
                 </p>
                 <hr>
             </div>
-        {% else %}
-            <p>No hay compras registradas.</p>
-        {% endfor %}
+            {% else %}
+                <div class="no-purchases-message">
+                    <p>No hay compras registradas.</p>
+                </div>
+            {% endfor %}
+        </div>
     </div>
 
     <script>
         const redirect = document.getElementById('redirect');
 
         redirect.addEventListener('click', (e) => {
+            e.preventDefault(); 
             window.location.href = "/catalogo";
         });
-        const precios = document.querySelectorAll('.precio');
-        const cantidades = document.querySelectorAll('.cantidad');
-        const totales = document.querySelectorAll('.total-producto');
 
-        for (let i = 0; i < precios.length; i++) {
-            let precio = parseFloat(precios[i].textContent);
-            let cantidad = parseInt(cantidades[i].textContent);
-            let total = 0;
+        const productCards = document.querySelectorAll('.product-card');
 
-            if (!isNaN(precio) && !isNaN(cantidad)) {
-                total = precio * cantidad;
+        productCards.forEach(card => {
+            const precioElement = card.querySelector('.precio');
+            const cantidadElement = card.querySelector('.cantidad');
+            const totalElement = card.querySelector('.total-producto');
+
+            if (precioElement && cantidadElement && totalElement) {
+                let precio = parseFloat(precioElement.textContent);
+                let cantidad = parseInt(cantidadElement.textContent);
+                let total = 0;
+
+                if (!isNaN(precio) && !isNaN(cantidad)) {
+                    total = precio * cantidad;
+                }
+
+                totalElement.textContent = total.toFixed(2);
             }
-
-            totales[i].textContent = total.toFixed(2);
-        }
+        });
     </script>
 </body>
 </html>
