@@ -16,14 +16,6 @@
         <nav>
             <ul class="menu-nav">
                 <li>
-                    <a href="#">
-                        <img src="{{ url_for('static', filename='css/multimedia/Buscar.png') }}"
-                            alt="Buscar"
-                            class="icono-nav"
-                            title="Buscar" />
-                    </a>
-                </li>
-                <li>
                     <a href="{{ url_for('catalogo') }}">
                         <img src="{{ url_for('static', filename='css/multimedia/Catalogo.png') }}"
                             alt="Catálogo"
@@ -50,7 +42,7 @@
                 {% if cedula %}
                 <li>
                     <a href="{{ url_for('cerrar_sesion') }}">
-                        <img src="{{ url_for('static', filename='css/multimedia/Registrar.png') }}"
+                        <img src="{{ url_for('static', filename='css/multimedia/cerrars.png') }}"
                             alt="Cerrar sesion"
                             class="icono-nav"
                             title="Cerrar Sesion" />
@@ -58,7 +50,7 @@
                 </li>
                 <li>
                     <a href="{{ url_for('Actualizar_usuario') }}">
-                        <img src="{{ url_for('static', filename='css/multimedia/Registrar.png') }}"
+                        <img src="{{ url_for('static', filename='css/multimedia/update.png') }}"
                             alt="Actualizar Datos"
                             class="icono-nav"
                             title="Actualizar Datos" />

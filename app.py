@@ -1,4 +1,5 @@
 from flask import Flask,request,render_template,redirect, url_for,session,flash
+from collections import defaultdict
 from flask_sqlalchemy import SQLAlchemy
 from flask_mail import Mail, Message
 import os
@@ -345,6 +346,7 @@ def compra():
         inventario = Inventario.query.filter_by(id_inventario=detalle.id_inventario).first()
         producto=Producto.query.filter_by(id_producto=inventario.id_producto).first()
         talla=Talla.query.filter_by(id_talla=inventario.id_talla).first()
+        inventario.cantidad -= detalle.cantidad
         datos.append({
             'carrito': carrito,
             'detalle': detalle,
@@ -353,6 +355,7 @@ def compra():
             'talla': talla
         })
     consultas.guardar_compra(datos)
+    db.session.commit()
     return redirect(url_for('catalogo'))
 
 @app.route('/Actualizar_usuario')
@@ -377,5 +380,98 @@ def actualizar_al_usuario():
     return render_template('actualizar_datos.html',cliente=cliente,ubicacion=ubicacion,aviso=aviso)
 
 
+@app.route('/historial_compras')
+def historial_compras():
+    cedula_U = session.get('usuario_id')
+    control = Compra.query.filter_by(cedula=cedula_U).all()
+    datos = []
+
+    for compra in control:
+        historial_detalles = DetalleCompra.query.filter_by(id_compra=compra.id_compra).all()
+        for historial in historial_detalles:
+            datos.append({
+                'historial': historial
+            })
+
+    return render_template('historial.html', datos=datos)
+
+@app.route('/limpiar')
+def limpiar():
+    cedula_U = session.get('usuario_id')
+    carrito = Carrito.query.filter_by(cedula=cedula_U).first()
+
+    if carrito:
+        DetalleCarrito.query.filter_by(id_carrito=carrito.id_carrito).delete()
+        db.session.commit()
+
+    return redirect(url_for('catalogo'))
+
+    
+@app.route('/ventas')
+def ventas():
+    compras = Compra.query.all()
+    datos = []
+
+    for compra in compras:
+        detalles = DetalleCompra.query.filter_by(id_compra=compra.id_compra).all()
+        cedula=Cliente.query.filter_by(cedula=compra.cedula).first()
+        for detalle in detalles:
+            datos.append({
+                'historial': detalle,
+                'compra': compra,
+                'cliente':cedula
+            })
+
+    return render_template('historial_admins.html', datos=datos)
+
+
+@app.route('/editar_categoria')
+def editar_categoria():
+    categoria=Categoria.query.all()
+    return render_template('categorias.html',categoria=categoria)
+
+@app.route('/update_cat',methods=['POST'])
+def update_cat():
+    idcat=request.form['id_categoria']
+    categoria=Categoria.query.filter_by(id_categoria=idcat).first()
+    return render_template('editar_categoria.html',categoria=categoria)
+
+@app.route('/actualizar_cat',methods=['POST'])
+def actualizar_cat():
+    idcat=request.form['idcat']
+    nombrecat=request.form['nombrec']
+    aviso=consultas.actualizar_categoria(idcat,nombrecat)
+    return redirect(url_for('editar_categoria'))
+
+@app.route('/ver_clientes')
+def ver_clientes():
+    cedula_U = session.get('usuario_id')
+    clientes = Cliente.query.filter(Cliente.cedula != cedula_U).all()
+    
+    datos = []
+    for detalle in clientes:
+        datos.append({
+            'Cliente': detalle,
+        })
+    return render_template('ver_clientes.html', datos=datos)
+
+@app.route('/historial_clientes', methods=['POST'])
+def historial_clientes():
+    cedula = request.form['cedulac']
+    compras = Compra.query.filter_by(cedula=cedula).all()
+
+    datos_agrupados = defaultdict(list)
+
+    for compra in compras:
+        detalles = DetalleCompra.query.filter_by(id_compra=compra.id_compra).all()
+
+        for detalle in detalles:
+            datos_agrupados[compra.id_compra].append({
+                'historial': detalle
+            })
+
+    return render_template('historial_admin_cliente.html', datos=datos_agrupados)
+
+    
 if __name__ == '__main__':
     app.run(debug=True)

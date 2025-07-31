@@ -74,3 +74,8 @@ p{ font-family:Trebuchet MS;
     border-radius: 5vh;
   
 }
+
+.item{
+    border-radius: 5%;
+    background-color: rgb(241, 130, 243);
+}

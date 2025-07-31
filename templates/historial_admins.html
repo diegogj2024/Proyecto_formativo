@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Productos Vendidos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos_editar.css') }}">
+</head>
+<body>
+    <h1>Historial de Productos Vendidos</h1>
+    <a href="#" id="redirect">Atras</a></p>
+
+    <div id="compras-container">
+        {% for item in datos %}
+            <div class="item">
+                <p><strong>Nombre del producto:</strong> {{ item.historial.nombre_producto }}</p>
+                <p><strong>Talla:</strong> {{ item.historial.talla }}</p>
+                <p>
+                    <strong>Cantidad:</strong> 
+                    <span class="cantidad">{{ item.historial.cantidad }}</span>
+                </p>
+                <p>
+                    <strong>Precio unitario:</strong> 
+                    $<span class="precio">{{ item.historial.precio_producto }}</span>
+                </p>
+                <p>
+                    <strong>Nombre del Cliente:</strong> 
+                    {{ item.cliente.nombre }} {{ item.cliente.apellido }}
+                </p>
+                <p>
+                    <strong>Cédula:</strong> 
+                    {{ item.cliente.cedula }}
+                </p>
+                <p>
+                    <strong>Total:</strong> 
+                    $<span class="total-producto">0</span>
+                </p>
+                <hr>
+            </div>
+        {% else %}
+            <p>No hay compras registradas.</p>
+        {% endfor %}
+    </div>
+
+    <script>
+        const redirect = document.getElementById('redirect');
+
+        redirect.addEventListener('click', (e) => {
+            window.location.href = "/admin";
+        });
+        const items = document.querySelectorAll('.item');
+
+        items.forEach(item => {
+            const precio = parseFloat(item.querySelector('.precio').textContent);
+            const cantidad = parseInt(item.querySelector('.cantidad').textContent);
+            const totalEl = item.querySelector('.total-producto');
+
+            if (!isNaN(precio) && !isNaN(cantidad)) {
+                const total = precio * cantidad;
+                totalEl.textContent = total.toFixed(2);
+            } else {
+                totalEl.textContent = "0.00";
+            }
+        });
+    </script>
+</body>
+</html>
