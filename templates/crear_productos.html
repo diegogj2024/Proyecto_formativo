@@ -45,48 +45,62 @@
                 <label>Tallas disponibles:</label><br>
                 {% for talla in tallas %}
                     <input type="checkbox" class="talla-checkbox" name="tallas" value="{{ talla.id_talla }}" data-talla="{{ talla.nombre_talla }}">
-                {{ talla.nombre_talla }}<br>
+                    {{ talla.nombre_talla }}<br>
                 {% endfor %}
             </div>
 
-            <div id="contenedor-cantidades">
-
-            </div>
+            <div id="contenedor-cantidades"></div>
 
             <button type="submit">Crear</button>
             <p class="toggle-text"><a href="#" id="redirect">Atras</a></p>
         </form>
+    </div>
 
 <script>
     const checkboxes = document.querySelectorAll('.talla-checkbox');
     const contenedorCantidades = document.getElementById('contenedor-cantidades');
     const redirect = document.getElementById('redirect');
 
-        redirect.addEventListener('click', (e) => {
-            window.location.href = "/admin";
-        });
+    redirect.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.href = "/admin";
+    });
 
     checkboxes.forEach(chk => {
-    chk.addEventListener('change', () => {
-        const tallaId = chk.value;
-        const nombreTalla = chk.dataset.talla;
+        chk.addEventListener('change', () => {
+            const tallaId = chk.value;
+            const nombreTalla = chk.dataset.talla;
 
-        if (chk.checked) {
-            const div = document.createElement('div');
-            div.id = 'cantidad_' + tallaId;
-            div.innerHTML = `
-                <label>Cantidad para talla ${nombreTalla}:</label>
-                <input type="number" name="cantidad_${tallaId}" min="0" required>
-            `;
-            contenedorCantidades.appendChild(div);
-        } else {
-            const inputDiv = document.getElementById('cantidad_' + tallaId);
-            if (inputDiv) {
-                contenedorCantidades.removeChild(inputDiv);
+            if (chk.checked) {
+                const div = document.createElement('div');
+                div.id = 'cantidad_' + tallaId;
+                div.innerHTML = `
+                    <label>Cantidad para talla ${nombreTalla}:</label>
+                    <input type="number" name="cantidad_${tallaId}" min="0" required>
+                `;
+                contenedorCantidades.appendChild(div);
+            } else {
+                const inputDiv = document.getElementById('cantidad_' + tallaId);
+                if (inputDiv) {
+                    contenedorCantidades.removeChild(inputDiv);
+                }
             }
+        });
+    });
+
+    document.getElementById('login').addEventListener('submit', function(e) {
+        let alMenosUnaSeleccionada = false;
+        checkboxes.forEach(chk => {
+            if (chk.checked) {
+                alMenosUnaSeleccionada = true;
+            }
+        });
+
+        if (!alMenosUnaSeleccionada) {
+            e.preventDefault();
+            alert('Debes seleccionar al menos una talla disponible.');
         }
     });
-});
 </script>
 </body>
 </html>
