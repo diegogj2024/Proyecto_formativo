@@ -3,16 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historial de Productos Vendidos</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos_editar.css') }}">
+    <title>Historial de Compras</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos_catalogo.css') }}">
 </head>
 <body>
-    <h1>Historial de Productos Vendidos</h1>
-    <a href="#" id="redirect">Atras</a></p>
+    <header>
+        <div class="contenedor_logo">
+            <div class="Logo">
+                <img src="{{ url_for('static', filename='css/multimedia/logo.png') }}" alt="Logo Creaciones Esmir">
+            </div>
+        </div>
+        <nav>
+            <a href="{{ url_for('admin') }}">Atras</a>
+        </nav>
+    </header>
 
-    <div id="compras-container">
-        {% for item in datos %}
-            <div class="item">
+    <div id="container">
+        <h2>Historial de Compras</h2>
+        <div class="product-grid" id="productGrid">
+            {% for item in datos %}
+            <div class="product-card">
                 <p><strong>Nombre del producto:</strong> {{ item.historial.nombre_producto }}</p>
                 <p><strong>Talla:</strong> {{ item.historial.talla }}</p>
                 <p>
@@ -24,42 +34,37 @@
                     $<span class="precio">{{ item.historial.precio_producto }}</span>
                 </p>
                 <p>
-                    <strong>Nombre del Cliente:</strong> 
-                    {{ item.cliente.nombre }} {{ item.cliente.apellido }}
-                </p>
-                <p>
-                    <strong>Cédula:</strong> 
-                    {{ item.cliente.cedula }}
-                </p>
-                <p>
                     <strong>Total:</strong> 
-                    $<span class="total-producto">0</span>
+                    $<span class="total-producto">{{ item.historial.precio_producto * item.historial.cantidad}}</span>
                 </p>
                 <hr>
             </div>
-        {% else %}
-            <p>No hay compras registradas.</p>
-        {% endfor %}
+            {% else %}
+                <div class="no-purchases-message">
+                    <p>No hay compras registradas.</p>
+                </div>
+            {% endfor %}
+        </div>
     </div>
 
     <script>
-        const redirect = document.getElementById('redirect');
+        const productCards = document.querySelectorAll('.product-card');
 
-        redirect.addEventListener('click', (e) => {
-            window.location.href = "/admin";
-        });
-        const items = document.querySelectorAll('.item');
+        productCards.forEach(card => {
+            const precioElement = card.querySelector('.precio');
+            const cantidadElement = card.querySelector('.cantidad');
+            const totalElement = card.querySelector('.total-producto');
 
-        items.forEach(item => {
-            const precio = parseFloat(item.querySelector('.precio').textContent);
-            const cantidad = parseInt(item.querySelector('.cantidad').textContent);
-            const totalEl = item.querySelector('.total-producto');
+            if (precioElement && cantidadElement && totalElement) {
+                let precio = parseFloat(precioElement.textContent);
+                let cantidad = parseInt(cantidadElement.textContent);
+                let total = 0;
 
-            if (!isNaN(precio) && !isNaN(cantidad)) {
-                const total = precio * cantidad;
-                totalEl.textContent = total.toFixed(2);
-            } else {
-                totalEl.textContent = "0.00";
+                if (!isNaN(precio) && !isNaN(cantidad)) {
+                    total = precio * cantidad;
+                }
+
+                totalElement.textContent = total.toFixed(2);
             }
         });
     </script>

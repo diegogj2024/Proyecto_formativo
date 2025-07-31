@@ -4,30 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historial de Productos Vendidos</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos_editar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos_catalogo.css') }}">
 </head>
 <body>
-    <h1>Historial de Productos Vendidos</h1>
-    <a href="#" id="redirect">Atrás</a>
-
-    <div id="compras-container">
+    <header>
+        <div class="contenedor_logo">
+            <div class="Logo">
+                <img src="{{ url_for('static', filename='css/multimedia/logo.png') }}" alt="Logo Creaciones Esmir">
+            </div>
+        </div>
+        <nav>
+            <a href="{{ url_for('ver_clientes') }}">Atras</a>
+        </nav>
+    </header>
+    <div id="container">
         {% for id_compra, items in datos.items() %}
-            <div class="item">
-                <h3>Compra #{{ loop.index }}</h3>
-
-                {% for item in items %}
-                    <p><strong>Nombre del producto:</strong> {{ item.historial.nombre_producto }}</p>
-                    <p><strong>Talla:</strong> {{ item.historial.talla }}</p>
-                    <p>
-                        <strong>Cantidad:</strong> 
-                        <span class="cantidad">{{ item.historial.cantidad }}</span>
-                    </p>
-                    <p>
-                        <strong>Precio unitario:</strong> 
-                        $<span class="precio">{{ item.historial.precio_producto }}</span>
-                    </p>
-                {% endfor %}
-                <p><strong>Total de la compra:</strong> $<span class="total-producto">0</span></p>
+            <div class="item" id="productGrid">
+                <div class="product-card">
+                    <h3>Compra Registrada{{loop.index}}</h3>
+                    {% for item in items %}
+                        <p><strong>Nombre del producto:</strong> {{ item.historial.nombre_producto }}</p>
+                        <p><strong>Talla:</strong> {{ item.historial.talla }}</p>
+                        <p>
+                            <strong>Cantidad:</strong> 
+                            <span class="cantidad">{{ item.historial.cantidad }}</span>
+                        </p>
+                        <p>
+                            <strong>Precio unitario:</strong> 
+                            $<span class="precio">{{ item.historial.precio_producto }}</span>
+                        </p>
+                        <hr>
+                    {% endfor %}
+                    <p><strong>Total de la compra:</strong> $<span class="total-producto">0</span></p>
+                </div>
             </div>
         {% else %}
             <p>No hay compras registradas.</p>
@@ -35,9 +44,6 @@
     </div>
 
     <script>
-        document.getElementById('redirect').addEventListener('click', () => {
-            window.location.href = "/admin";
-        });
         const items = document.querySelectorAll('.item');
 
         items.forEach(item => {
@@ -54,8 +60,10 @@
             }
 
             const totalEl = item.querySelector('.total-producto');
-            totalEl.textContent = total.toFixed(2);
+            if (totalEl) {
+                totalEl.textContent = total.toFixed(2);
+            }
         });
     </script>
 </body>
-</html>
+</html>    
