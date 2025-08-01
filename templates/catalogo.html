@@ -1,3 +1,4 @@
+<!-- catalogo.html actualizado con filtro por categoría y búsqueda -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -24,7 +25,6 @@
     {% endwith %}
 
     <nav>
-      <a href="{{ url_for('carrito') }}">Mi Carrito</a>
       {% if cedula_U and carro %}
         <a href="{{ url_for('carrito') }}">Mi Carrito</a>
         <a href="{{ url_for('cerrar_sesion') }}">Cerrar Sesion</a>
@@ -36,17 +36,36 @@
       {% else %}
         <a href="{{ url_for('cerrar_sesion') }}">Cerrar Sesion</a>
         <a href="{{ url_for('Actualizar_usuario') }}">Actualizar Datos</a>
-
       {% endif %}
       <a href="{{ url_for('index') }}">Menu Principal</a>
     </nav>
   </header>
+
 <div class="container">
   <h2>Colección Destacada</h2>
+  <div class="filtros-catalogo">
+  <form method="GET" action="{{ url_for('catalogo') }}">
+    <div class="campo-filtro">
+      <input type="text" name="busqueda" placeholder="Buscar producto..." value="{{ request.args.get('busqueda', '') }}">
+    </div>
+
+    <div class="campo-filtro">
+      <select name="categoria" onchange="this.form.submit()">
+        <option value="">-- Todas las categorías --</option>
+        {% for cat in categorias %}
+          <option value="{{ cat.id_categoria }}" {% if cat.id_categoria|string == request.args.get('categoria') %}selected{% endif %}>
+            {{ cat.nombre_categoria }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+  </form>
+</div>
+
+
   <div class="product-grid" id="productGrid">
     {% for pro in productos %}
       {% set tallas = tallas_por_producto[pro.id_producto] %}
-      
       {% set total_stock = tallas.values() | selectattr('cantidad', 'gt', 0) | list | length %}
 
       {% if total_stock > 0 %}
@@ -72,7 +91,6 @@
                   {% endif %}
                 {% endfor %}
               </ul>
-
               <input type="hidden" name="id_producto" value="{{ pro.id_producto }}">
               <button type="submit" data-product-id="{{ pro.id_producto }}" name="id_p" value="{{ pro.id_producto }}">Añadir al Carrito</button>
             </form>
@@ -82,15 +100,16 @@
     {% endfor %}
   </div>
 </div>
-  <footer>
-    <p>&copy; 2025 Creaciones Esmir. Todos los derechos reservados.</p>
-  </footer>
 
-  <script>
+<footer>
+  <p>&copy; 2025 Creaciones Esmir. Todos los derechos reservados.</p>
+</footer>
+
+<script>
     function validarFormulario(formulario) {
       console.log("Ejecutando validación...");
       const idProducto = formulario.querySelector('input[name="id_producto"]').value;
-      const radios = formulario.querySelectorAll(`input[name="talla_${idProducto}"]`);
+      const radios = formulario.querySelectorAll(input[name="talla_${idProducto}"]);
 
       let tallaSeleccionada = null;
       radios.forEach(radio => {
@@ -104,7 +123,7 @@
         return false;
       }
 
-      const cantidadInput = formulario.querySelector(`input[name="cantidad_${tallaSeleccionada}"]`);
+      const cantidadInput = formulario.querySelector(input[name="cantidad_${tallaSeleccionada}"]);
       if (!cantidadInput || parseInt(cantidadInput.value) <= 0) {
         alert("Debes ingresar una cantidad válida para la talla seleccionada.");
         return false;

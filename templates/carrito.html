@@ -4,31 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>editar productos</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos_editar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos_catalogo.css') }}">
 </head>
 <body>
-    <div id="Titulo_div"> <h1>carrito de compras</h1></div>
-    <a href="{{ url_for('catalogo') }}"><button id="Menu_boton">Atras</button></a>
+      <header>
+    <div class="contenedor_logo">
+      <div class="logo">
+        <img src="https://sdmntprnorthcentralus.oaiusercontent.com/files/00000000-ccb4-622f-b93c-0fe8013ce9b2/raw?..." alt="Logo Creaciones Esmir">
+      </div>
+      <span class="logo-texto">Creaciones Esmir</span>
+    </div>
 
-    <a href="{{ url_for('limpiar') }}"><button id="Menu_boton">limpiar carrito</button></a>
-    <div>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for mensaje in messages %}
+          <div class="alert">{{ mensaje }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <nav>
+      <a href="{{ url_for('catalogo') }}">Atras</a>
+      <a href="{{ url_for('limpiar') }}">limpiar carrito</a>
+    </nav>
+  </header>
+    <div class="container">
 
             {% for item in datos %}
-                    <img src="{{ url_for('static', filename='productos/' + item.producto.imagen) }}" alt="">
+                    <img src="{{ url_for('static', filename='productos/' + item.producto.imagen) }}" alt="" id="qr">
                     <p>{{ item.producto.nombre_producto}}</p>
                     <p>{{ item.talla.nombre_talla }}</p>
                     <p>{{ item.detalle.cantidad }}</p>
                     <p>{{ item.producto.precio }}</p>
-                    <p>----------------------------</p>
+                    <hr>
             {% endfor %}
             
-            <p>deberas realizar el pago al siguiente numero de nequi y se tomara su pedido,
-                 en la descripcion deberas mandar tu nombre y numero de cedula</p><br>
-            <p>aca ira el numero de nequi</p><br>
+            <p>deberas realizar el pago al siguiente numero de nequi y se tomara su pedido</p><br>
+            <p><img src="{{ url_for('static', filename='css/multimedia/qrnequi.jpg') }}" alt="QR de nequi" id="qr"> </p><br>
             <p>si el pedido no se ve reflejado en el nequi no se tomara el pedido</p><br>
             <p>total a pagar {{acumulador}}</p><br>
             {%if datos%}
-                <a href="{{ url_for('compra') }}"><button id="Menu_boton">Pagar</button></a>
+                <a href="{{ url_for('compra') }}"><button class="botoncitouwu">Pagar</button></a>
             {%endif%}
     </div>
 </body>
