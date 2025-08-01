@@ -3,50 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carrito de Compras</title>
+    <title>editar productos</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos_catalogo.css') }}">
 </head>
 <body>
-    <header>
-        <div class="contenedor_logo">
-            <div class="Logo">
-                <img src="{{ url_for('static', filename='css/multimedia/logo.png') }}" alt="Logo Creaciones Esmir">
-            </div>
-        </div>
-        <nav>
-            <a href="{{ url_for('catalogo') }}"><button class="botoncitouwu">Atrás</button></a>
-            <a href="{{ url_for('limpiar') }}"><button class="botoncitouwu">Limpiar Carrito</button></a>
-        </nav>
-    </header>
+      <header>
+    <div class="contenedor_logo">
+      <div class="logo">
+        <img src="https://sdmntprnorthcentralus.oaiusercontent.com/files/00000000-ccb4-622f-b93c-0fe8013ce9b2/raw?..." alt="Logo Creaciones Esmir">
+      </div>
+      <span class="logo-texto">Creaciones Esmir</span>
+    </div>
 
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for mensaje in messages %}
+          <div class="alert">{{ mensaje }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <nav>
+      <a href="{{ url_for('catalogo') }}">Atras</a>
+      <a href="{{ url_for('limpiar') }}">limpiar carrito</a>
+    </nav>
+  </header>
     <div class="container">
-        <h2>Carrito de Compras</h2>
-        <div class="product-grid" id="productGrid">
+
             {% for item in datos %}
-                <div class="product-card">
-                    <img src="{{ url_for('static', filename='productos/' + item.producto.imagen) }}" alt="">
-                    <p>{{ item.producto.nombre_producto }}</p>
+                    <img src="{{ url_for('static', filename='productos/' + item.producto.imagen) }}" alt="" id="qr">
+                    <p>{{ item.producto.nombre_producto}}</p>
                     <p>{{ item.talla.nombre_talla }}</p>
-                    <p>Cantidad: {{ item.detalle.cantidad }}</p>
-                    <p>Precio: ${{ item.producto.precio }}</p>
-                    <p>----------------------------</p>
-                </div>
-            {% else %}
-                <div>
-                    <h3>Tu carrito de compras está vacío.</h3>
-                </div>
+                    <p>{{ item.detalle.cantidad }}</p>
+                    <p>{{ item.producto.precio }}</p>
+                    <hr>
             {% endfor %}
-        </div>
-
-        <h2>Resumen de Compra</h2>
-        <p>Deberás realizar el pago al siguiente número de Nequi. En la descripción, por favor, envía tu nombre completo y número de cédula para que tu pedido sea tomado en cuenta.</p><br>
-        <p><strong>Número de Nequi:</strong> ACA IRA EL NÚMERO DE NEQUI</p><br>
-        <p>Si el pedido no se ve reflejado en el Nequi, no se tomará el pedido.</p><br>
-        <p><strong>Total a pagar:</strong> ${{ acumulador }}</p><br>
-
-        {% if datos %}
-            <a href="{{ url_for('compra') }}"><button class="botoncitouwu">Pagar</button></a>
-        {% endif %}
+            
+            <p>deberas realizar el pago al siguiente numero de nequi y se tomara su pedido</p><br>
+            <p><img src="{{ url_for('static', filename='css/multimedia/qrnequi.jpg') }}" alt="QR de nequi" id="qr"> </p><br>
+            <p>si el pedido no se ve reflejado en el nequi no se tomara el pedido</p><br>
+            <p>total a pagar {{acumulador}}</p><br>
+            {%if datos%}
+                <a href="{{ url_for('compra') }}"><button class="botoncitouwu">Pagar</button></a>
+            {%endif%}
     </div>
 </body>
 </html>

@@ -106,11 +106,6 @@ class DetalleCompra(db.Model):
     cantidad=db.Column(db.Integer, nullable=False)
     precio_producto=db.Column(db.Integer, nullable=False)
 
-class Factura(db.Model):
-    __tablename__ = 'factura'
-    id_compra = db.Column(db.Integer, db.ForeignKey('compra.id_compra'), primary_key=True)
-    fecha = db.Column(db.Date)
-    monto_total = db.Column(db.Numeric(10, 2))
 
 class Carrito(db.Model):
     __tablename__ = 'carrito'
@@ -143,26 +138,34 @@ def index():
 
 @app.route('/catalogo')
 def catalogo():
+    busqueda = request.args.get('busqueda', '')
+    categoria_id = request.args.get('categoria', '')
     cedula_U=session.get('usuario_id')
-    productos = Producto.query.all()
     carro=Carrito.query.filter_by(cedula=cedula_U).first()
-    tallas_por_producto = {} 
 
+    query = Producto.query
+
+    if busqueda:
+        query = query.filter(Producto.nombre_producto.ilike(f"%{busqueda}%"))
+    if categoria_id:
+        query = query.join(Producto.categorias).filter(Categoria.id_categoria == categoria_id)
+
+    productos = query.all()
+    categorias = Categoria.query.all()
+
+    tallas_por_producto = {}
     for producto in productos:
-        inventario = Inventario.query.filter_by(id_producto=producto.id_producto).all()
-        tallas_con_cantidades = {}
+        inventarios = Inventario.query.filter_by(id_producto=producto.id_producto).all()
+        tallas_info = {}
+        for inv in inventarios:
+            talla = Talla.query.get(inv.id_talla)
+            tallas_info[inv.id_talla] = {
+                'nombre_talla': talla.nombre_talla,
+                'cantidad': inv.cantidad
+            }
+        tallas_por_producto[producto.id_producto] = tallas_info
 
-        for item in inventario:
-            talla = Talla.query.get(item.id_talla)
-            if talla:
-                tallas_con_cantidades[talla.id_talla] ={
-                    'nombre_talla': talla.nombre_talla,
-                    'cantidad': item.cantidad
-                }
-        
-        tallas_por_producto[producto.id_producto] = tallas_con_cantidades
-
-    return render_template('catalogo.html', productos=productos, tallas_por_producto=tallas_por_producto,cedula_U=cedula_U,carro=carro)
+    return render_template('catalogo.html',productos=productos,categorias=categorias,tallas_por_producto=tallas_por_producto,cedula_U=cedula_U,carro=carro)
 
 
 @app.route('/inicio_sesion')
