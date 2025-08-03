@@ -248,3 +248,12 @@ header {
     width: 20%;
     height: 20%;
 }
+
+#nombrep{
+    color: black;
+}
+
+#tituloprodu{
+    position: relative;
+    left: 30%;
+}
