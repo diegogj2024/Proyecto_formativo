@@ -21,7 +21,7 @@
         <div class="product-grid" id="productGrid"></div>
           {% for item in datos %}
              <div class="product-card">
-                    <p>Nombre: {{item.Cliente.nombre}}  {{item.Cliente.apellido}}<br>  Numero de documento: {{item.Cliente.cedula}} <br>Correo electronico: {{item.Cliente.correo}}</p>
+                    <p>Nombre: {{item.Cliente.nombre}}  {{item.Cliente.apellido}}<br>  Numero de documento: {{item.Cliente.cedula}} <br>Correo electronico: {{item.Cliente.correo}}<br>Numero Celular:  {{item.Cliente.telefono}} <br>Ubicacion:  {{item.Ubicacion.direccion}}</p>
                     <form action="/historial_clientes" method="POSt">
                     <button value="{{item.Cliente.cedula}}" name="cedulac"> historial de compras</button>
                     </form>

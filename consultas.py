@@ -176,34 +176,45 @@ def actualizar(nombre, descripcion, categorias, precio, imagen, id_producto, tal
 def cerrar_Sesion():
     session.clear()
 
-def guardar_detalles_carrito(id_produ,cantidad,id_talla_seleccionada):
-    with app.app_context():
-        cedula_U=session.get('usuario_id')
-        verificar_carro=Carrito.query.filter_by(cedula=cedula_U).first()
-        inventario = Inventario.query.filter_by(id_producto=id_produ, id_talla=id_talla_seleccionada).first()
-        if verificar_carro:
-            nuevo_detalle_Carrito=DetalleCarrito(
-                id_carrito=verificar_carro.id_carrito,
-                id_inventario=inventario.id_inventario,
-                cantidad=cantidad
-            )
-            db.session.add(nuevo_detalle_Carrito)
-            db.session.commit()
-        else:
-            nuevo_carrito=Carrito(
-                cedula=cedula_U
-            )
-            db.session.add(nuevo_carrito)
-            db.session.commit()
-            verificar_carro2=Carrito.query.filter_by(cedula=cedula_U).first()
+from flask import flash
 
-            nuevo_detalle_Carrito=DetalleCarrito(
-                id_carrito=verificar_carro2.id_carrito,
+def guardar_detalles_carrito(id_produ, cantidad, id_talla_seleccionada):
+    with app.app_context():
+        cedula_U = session.get('usuario_id')
+        cantidad = int(cantidad)
+
+        carrito = Carrito.query.filter_by(cedula=cedula_U).first()
+        if not carrito:
+            carrito = Carrito(cedula=cedula_U)
+            db.session.add(carrito)
+            db.session.commit()
+
+        inventario = Inventario.query.filter_by(id_producto=id_produ, id_talla=id_talla_seleccionada).first()
+        detalle_existente = DetalleCarrito.query.filter_by(
+            id_carrito=carrito.id_carrito,
+            id_inventario=inventario.id_inventario
+        ).first()
+
+        cantidad_actual_en_carrito = detalle_existente.cantidad if detalle_existente else 0
+        cantidad_total = cantidad_actual_en_carrito + cantidad
+
+        if cantidad_total > inventario.cantidad:
+            flash("La cantidad solicitada supera el stock disponible para esa talla.")
+            return
+
+        if detalle_existente:
+            detalle_existente.cantidad += cantidad
+        else:
+            nuevo_detalle = DetalleCarrito(
+                id_carrito=carrito.id_carrito,
                 id_inventario=inventario.id_inventario,
                 cantidad=cantidad
             )
-            db.session.add(nuevo_detalle_Carrito)
-            db.session.commit()
+            db.session.add(nuevo_detalle)
+        db.session.commit()
+
+
+
 
 def actualizar_usuario(nombre,apellido,correo,telefono,password,ubicacion):
     with app.app_context():

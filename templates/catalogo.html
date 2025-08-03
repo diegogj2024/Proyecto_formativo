@@ -105,32 +105,33 @@
 </footer>
 
 <script>
-    function validarFormulario(formulario) {
-      console.log("Ejecutando validación...");
-      const idProducto = formulario.querySelector('input[name="id_producto"]').value;
-      const radios = formulario.querySelectorAll(input[name="talla_${idProducto}"]);
+  function validarFormulario(formulario) {
+  console.log("Ejecutando validación...");
+  const idProducto = formulario.querySelector('input[name="id_producto"]').value;
+  const radios = formulario.querySelectorAll(`input[name="talla_${idProducto}"]`);
 
-      let tallaSeleccionada = null;
-      radios.forEach(radio => {
-        if (radio.checked) {
-          tallaSeleccionada = radio.value;
-        }
-      });
-
-      if (!tallaSeleccionada) {
-        alert("Debes seleccionar una talla antes de añadir al carrito.");
-        return false;
-      }
-
-      const cantidadInput = formulario.querySelector(input[name="cantidad_${tallaSeleccionada}"]);
-      if (!cantidadInput || parseInt(cantidadInput.value) <= 0) {
-        alert("Debes ingresar una cantidad válida para la talla seleccionada.");
-        return false;
-      }
-
-      console.log("Formulario validado correctamente.");
-      return true;
+  let tallaSeleccionada = null;
+  radios.forEach(radio => {
+    if (radio.checked) {
+      tallaSeleccionada = radio.value;
     }
+  });
+
+  if (!tallaSeleccionada) {
+    alert("Debes seleccionar una talla antes de añadir al carrito.");
+    return false;
+  }
+
+  const cantidadInput = formulario.querySelector(`input[name="cantidad_${tallaSeleccionada}"]`);
+  if (!cantidadInput || parseInt(cantidadInput.value) <= 0) {
+    alert("Debes ingresar una cantidad válida para la talla seleccionada.");
+    return false;
+  }
+
+  console.log("Formulario validado correctamente.");
+  return true;
+}
+
 
     document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.talla-checkbox').forEach(radio => {

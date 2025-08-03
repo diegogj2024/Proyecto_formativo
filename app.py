@@ -326,7 +326,6 @@ def guardar_en_carrito():
         id_talla_seleccionada = request.form.get(f"talla_{id_produ}")
         cantidad = request.form.get(f"cantidad_{id_talla_seleccionada}")
         consultas.guardar_detalles_carrito(id_produ,cantidad,id_talla_seleccionada)
-        flash("guardao en el carrito")
         return redirect(url_for('catalogo'))
     else:
         flash("Debes inicar sesion primero si deseas realizar una compra")
@@ -453,8 +452,10 @@ def ver_clientes():
     
     datos = []
     for detalle in clientes:
+        ubicacion=Ubicacion.query.filter_by(id=detalle.ubicacion_id).first()
         datos.append({
             'Cliente': detalle,
+            'Ubicacion': ubicacion,
         })
     return render_template('ver_clientes.html', datos=datos)
 

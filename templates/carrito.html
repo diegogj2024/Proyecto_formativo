@@ -13,15 +13,6 @@
             <img src="{{ url_for('static', filename='css/multimedia/logo.png') }}" alt="Logo Creaciones Esmir">
         </div>
       </div>
-
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        {% for mensaje in messages %}
-          <div class="alert">{{ mensaje }}</div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
-
     <nav>
       <a href="{{ url_for('catalogo') }}">Atras</a>
       <a href="{{ url_for('limpiar') }}">limpiar carrito</a>

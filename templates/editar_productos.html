@@ -4,19 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>editar productos</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos_editar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos_catalogo.css') }}">
 </head>
 <body>
-    <div id="Titulo_div"> <h1>Haz clic en el producto que deseas actualizar</h1></div>
-    <a href="{{ url_for('admin') }}"><button id="Menu_boton">Volver al menú principal</button></a>
-    <div>
+   <header>
+      <div class="contenedor_logo">
+        <div class="Logo">
+            <img src="{{ url_for('static', filename='css/multimedia/logo.png') }}" alt="Logo Creaciones Esmir">
+        </div>
+      </div>
+    <nav>
+      <a href="{{ url_for('admin') }}">Atras</a>
+    </nav>
+  </header>   
+    <div class="container">
+        <h1 id="tituloprodu">seleccione el producto a actualizar</h1>
         <form action='/editar_producto' method="post">
             {% for pro in productos %}
+            <div class="product-card">
              <button type="submit" name="id_p" value="{{pro.id_producto}}">
                 <img src="{{ url_for('static', filename='productos/' + pro.imagen) }}" >
-                <h2>{{pro.nombre_producto}}</h2>
+                <h2 id="nombrep">{{pro.nombre_producto}}</h2>
                 <p>{{pro.descripcion}}</p>
-            </button>
+             </button>
+            </div>
             {% endfor %}
         </form>
     </div>
