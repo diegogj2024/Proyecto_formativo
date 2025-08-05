@@ -13,6 +13,8 @@
             {% if aviso %}
                 <p style="color:red;">{{ aviso }}</p>
             {% endif %}
+            <a href="{{ url_for('hola') }}"><button>Hola Render</button></a>
+            
         <form id="login" action="/ingresar_productos" method="POST" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="nombrep">Nombre del producto</label>

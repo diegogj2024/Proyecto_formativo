@@ -300,7 +300,7 @@ def carrito():
     carrito=Carrito.query.filter_by(cedula=cedula_U).first()
     datos=[]
     acumulador=0
-    detalles = DetalleCarrito.query.filter_by(id_carrito=carrito.id_carrito).all()
+    detalles = DetalleCarrito.query.filter_by(id_carrito=carrito.id_carrito ).all()
     for detalle in detalles:
         inventario = Inventario.query.filter_by(id_inventario=detalle.id_inventario).first()
         producto=Producto.query.filter_by(id_producto=inventario.id_producto).first()
@@ -477,5 +477,9 @@ def historial_clientes():
     return render_template('historial_admin_cliente.html', datos=datos_agrupados)
 
     
+@app.route ('/hola')
+def hola():
+    return render_template('hola.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
